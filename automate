@@ -36,5 +36,7 @@ Connection to google:
 $(ping -c 3 forcesafesearch.google.com)
 EOF
 
+echo halo dunia
+
 sudo chmod +x automate
 ./automate sultan zarfin.lasut sultan-fariz

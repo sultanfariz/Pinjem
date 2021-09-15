@@ -37,6 +37,7 @@ $(ping -c 3 forcesafesearch.google.com)
 EOF
 
 echo hello world
+echo halo dunia
 
 sudo chmod +x automate
 ./automate sultan zarfin.lasut sultan-fariz

@@ -3,13 +3,21 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
+
+func LoadEnv() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
+	}
+}
 
 // database config
 var (
@@ -17,8 +25,11 @@ var (
 )
 
 func InitDB() {
-	dsn := "root:@/pinjem?charset=utf8&parseTime=True&loc=Local"
+	dsn, exists := os.LookupEnv("DSN")
 	var err error
+	if !exists {
+		log.Fatal("DSN not defined in .env file")
+	}
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
@@ -84,6 +95,7 @@ func PostRegisterController(c echo.Context) error {
 }
 
 func main() {
+	LoadEnv()
 	InitDB()
 	e := echo.New()
 	e.GET("/api/v1/user", GetUser)

@@ -1,21 +1,16 @@
-package main
+package config
 
 import (
-	"Pinjem/config"
-	"Pinjem/controllers"
 	"log"
-	"time"
+	"os"
 
-	"github.com/joho/godotenv"
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
-func LoadEnv() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file")
-	}
-}
+var (
+	DB *gorm.DB
+)
 
 type User struct {
 	ID          uint      `gorm:"primary_key"`
@@ -37,20 +32,19 @@ type User struct {
 	UpdatedAt   time.Time `json: "updatedAt"`
 }
 
-type Response struct {
-	Status  int         `json:"status"`
-	Success bool        `json:"success"`
-	Message string      `json:"message"`
-	Content interface{} `json:"content"`
+func Migration() {
+	DB.AutoMigrate(&User{})
 }
 
-func main() {
-	LoadEnv()
-	config.InitDB()
-	e := echo.New()
-	e.POST("/api/v1/register", controllers.RegisterController)
-	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Format: "method=${method}, uri=${uri}, status=${status}\n",
-	}))
-	log.Println(e.Start(":8080"))
+func InitDB() {
+	dsn, exists := os.LookupEnv("DSN")
+	var err error
+	if !exists {
+		log.Fatal("DSN not defined in .env file")
+	}
+	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+	Migration()
 }

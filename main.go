@@ -27,6 +27,7 @@ func main() {
 	config.InitDB()
 	e := echo.New()
 	e.POST("/api/v1/register", controllers.RegisterController)
+	e.POST("/api/v1/login", controllers.LoginController)
 	// e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 	// 	Format: "method=${method}, uri=${uri}, status=${status}\n",
 	// 	// Skipper: func(c echo.Context) bool {

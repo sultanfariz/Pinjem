@@ -4,6 +4,7 @@ import (
 	"Pinjem/config"
 	"Pinjem/helpers"
 	users "Pinjem/models/user"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -15,6 +16,30 @@ type Response struct {
 	Success bool        `json:"success"`
 	Message string      `json:"message"`
 	Content interface{} `json:"content"`
+}
+
+func LoginController(c echo.Context) error {
+	var userLogin users.LoginUserinput
+	var response Response
+	c.Bind(&userLogin)
+	if userLogin.Email == "" || userLogin.Password == "" {
+		response.Status = http.StatusBadRequest
+		response.Success = false
+		response.Message = "Please fill all the fields"
+		response.Content = ""
+		return c.JSON(response.Status, response)
+	}
+	user := config.DB.Where(&users.User{Email: userLogin.Email}).First(&users.User{})
+	if user.Error != nil {
+		fmt.Println(user)
+		response.Status = http.StatusBadRequest
+		response.Success = false
+		response.Message = "error pas ngecek ke db"
+		response.Content = ""
+		return c.JSON(response.Status, response)
+	}
+
+	return nil
 }
 
 func RegisterController(c echo.Context) error {

@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	"github.com/labstack/echo/middleware"
 	"github.com/labstack/echo/v4"
 )
 
@@ -49,8 +48,14 @@ func main() {
 	config.InitDB()
 	e := echo.New()
 	e.POST("/api/v1/register", controllers.RegisterController)
-	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Format: "method=${method}, uri=${uri}, status=${status}\n",
-	}))
+	// e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+	// 	Format: "method=${method}, uri=${uri}, status=${status}\n",
+	// 	// Skipper: func(c echo.Context) bool {
+	// 	// 	if strings.HasPrefix(c.Request().Host, "localhost") {
+	// 	// 		return true
+	// 	// 	}
+	// 	// 	return false
+	// 	// },
+	// }))
 	log.Println(e.Start(":8080"))
 }

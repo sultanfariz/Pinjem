@@ -14,10 +14,7 @@ import (
 func LoginController(c echo.Context) error {
 	var userLogin users.LoginUserinput
 	var err error
-	userLogin.Email = c.FormValue("email")
-	userLogin.Password = c.FormValue("password")
-	// c.Bind(&userLogin)
-	// fmt.Println(userLogin)
+	c.Bind(&userLogin)
 	if userLogin.Email == "" || userLogin.Password == "" {
 		return c.JSON(http.StatusBadRequest, responses.Response{
 			Status:  http.StatusBadRequest,
@@ -67,20 +64,7 @@ func LoginController(c echo.Context) error {
 func RegisterController(c echo.Context) error {
 	var user users.User
 	var userRegister users.RegisterUserinput
-	// c.Bind(&userRegister)
-	userRegister.Email = c.FormValue("email")
-	userRegister.Password = c.FormValue("password")
-	userRegister.Fullname = c.FormValue("fullname")
-	userRegister.NIK = c.FormValue("nik")
-	userRegister.PhoneNumber = c.FormValue("phoneNumber")
-	userRegister.Birthdate = c.FormValue("birthdate")
-	userRegister.Address = c.FormValue("address")
-	userRegister.Provinsi = c.FormValue("provinsi")
-	userRegister.Kota = c.FormValue("kota")
-	userRegister.Kecamatan = c.FormValue("kecamatan")
-	userRegister.Desa = c.FormValue("desa")
-	userRegister.PostalCode = c.FormValue("postalCode")
-	userRegister.Role = c.FormValue("role")
+	c.Bind(&userRegister)
 
 	if userRegister.Fullname == "" || userRegister.Email == "" || userRegister.Password == "" {
 		return c.JSON(http.StatusBadRequest, responses.Response{

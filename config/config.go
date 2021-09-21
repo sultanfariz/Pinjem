@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -12,6 +13,12 @@ import (
 var (
 	DB *gorm.DB
 )
+
+func LoadEnv() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
+	}
+}
 
 func Migration() {
 	DB.AutoMigrate(&users.User{})

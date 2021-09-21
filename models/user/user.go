@@ -22,7 +22,6 @@ type User struct {
 	PostalCode  string         `gorm:"not null" json:"postalCode"`
 	Role        string         `gorm:"not null" json:"role"`
 	Status      int            `gorm:"not null" json:"status"`
-	Token       string         `json:"token" form:"token"`
 	CreatedAt   time.Time      `json:"createdAt"`
 	UpdatedAt   time.Time      `json:"updatedAt"`
 	DeletedAt   gorm.DeletedAt `gorm:"index" json:"deletedAt"`

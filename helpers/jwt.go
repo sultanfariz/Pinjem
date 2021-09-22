@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"net/http"
 	"os"
 	"time"
 
@@ -59,4 +60,16 @@ func ExtractTokenUserId(e echo.Context) (int, error) {
 		}
 	}
 	return 0, nil
+}
+
+func SetTokenCookie(name, token string, expiration time.Time, c echo.Context) {
+	cookie := new(http.Cookie)
+	cookie.Name = name
+	cookie.Value = token
+	cookie.Expires = expiration
+	cookie.Path = "/"
+	// Http-only helps mitigate the risk of client side script accessing the protected cookie.
+	cookie.HttpOnly = true
+
+	c.SetCookie(cookie)
 }

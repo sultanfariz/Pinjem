@@ -5,7 +5,9 @@ import (
 	"Pinjem/helpers"
 	responses "Pinjem/models/response"
 	users "Pinjem/models/user"
+	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -81,6 +83,30 @@ func RegisterController(c echo.Context) error {
 			Message: "Internal Server Error",
 		})
 	}
+
+	// upload file KTP
+	file, err := c.FormFile("ktp")
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, responses.Response{
+			Status:  http.StatusInternalServerError,
+			Success: false,
+			Message: "Internal Server Error",
+		})
+	}
+
+	split := strings.Split(file.Filename, ".")
+	extension := split[len(split)-1]
+	fileName := strings.ReplaceAll(fmt.Sprintf("KTP_%s", userRegister.Fullname), " ", "_")
+	filePath := "KTP"
+	fileURL, fileErr := helpers.UploadFile(filePath, fileName, extension, file)
+	if fileErr != nil {
+		return c.JSON(http.StatusInternalServerError, responses.Response{
+			Status:  http.StatusInternalServerError,
+			Success: false,
+			Message: "Internal Server Error",
+		})
+	}
+
 	user.Email = userRegister.Email
 	user.Password = hash
 	user.Fullname = userRegister.Fullname
@@ -95,8 +121,10 @@ func RegisterController(c echo.Context) error {
 	user.PostalCode = userRegister.PostalCode
 	user.Role = userRegister.Role
 	user.Status = 1
+	user.LinkKTP = fileURL
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
+
 	// insert user to db
 	res := config.DB.Where(&users.User{Email: user.Email}).FirstOrCreate(&user)
 	if res.Error != nil {
@@ -106,6 +134,7 @@ func RegisterController(c echo.Context) error {
 			Message: "Internal Server Error",
 		})
 	}
+
 	return c.JSON(http.StatusOK, responses.Response{
 		Status:  http.StatusOK,
 		Success: true,

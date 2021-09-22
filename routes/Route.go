@@ -25,6 +25,8 @@ func InitRoutes() *echo.Echo {
 		// 	return false
 		// },
 	}))
+	v1.Use(middleware.Recover())
+	v1.Static("/uploads", "public")
 
 	v1.POST("/register", controllers.RegisterController)
 	v1.POST("/login", controllers.LoginController)

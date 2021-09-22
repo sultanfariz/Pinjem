@@ -53,6 +53,10 @@ func LoginController(c echo.Context) error {
 			Message: "Internal Server Error",
 		})
 	}
+
+	expirationTime := time.Now().Add(time.Hour * 24)
+	helpers.SetTokenCookie("token", token, expirationTime, c)
+
 	return c.JSON(http.StatusOK, responses.Response{
 		Status:  http.StatusOK,
 		Success: true,

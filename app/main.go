@@ -26,7 +26,7 @@ func main() {
 		Port:     os.Getenv("DB_PORT"),
 		User:     os.Getenv("DB_USER"),
 		Password: os.Getenv("DB_PASSWORD"),
-		Database: os.Getenv("DB_NAME"),
+		Database: os.Getenv("DB_DATABASE"),
 	}
 	Conn := configDB.InitDB()
 	Conn.AutoMigrate(&_userDb.Users{})

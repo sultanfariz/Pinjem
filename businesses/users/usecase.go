@@ -61,3 +61,10 @@ func (u *Usecase) GetAll(ctx context.Context) ([]Domain, error) {
 
 	return u.Repo.GetAll(ctx)
 }
+
+func (u *Usecase) GetById(ctx context.Context, id uint) (Domain, error) {
+	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
+	defer cancel()
+
+	return u.Repo.GetById(ctx, id)
+}

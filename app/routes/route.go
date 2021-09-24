@@ -35,5 +35,5 @@ func (c ControllerList) InitRoutes(e *echo.Echo) {
 	// v1.GET("/users", c.AuthController.GetAll, jwt)
 	// v1.GET("/users", c.UserController.GetAll)
 	v1.GET("/users", c.UserController.GetAll, jwt)
-	// v1.GET("/users/:userId", c.UserController.GetUserById, jwt)
+	v1.GET("/users/:userId", c.UserController.GetById)
 }

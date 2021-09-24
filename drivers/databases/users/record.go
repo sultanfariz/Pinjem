@@ -62,7 +62,7 @@ func (u *Users) ToDomain() users.Domain {
 	}
 }
 
-func (u *Users) FromDomain(domain users.Domain) Users {
+func FromDomain(domain users.Domain) Users {
 	return Users{
 		ID:          domain.Id,
 		Email:       domain.Email,
@@ -83,4 +83,12 @@ func (u *Users) FromDomain(domain users.Domain) Users {
 		CreatedAt:   domain.CreatedAt,
 		UpdatedAt:   domain.UpdatedAt,
 	}
+}
+
+func ToListDomain(data []Users) []users.Domain {
+	var listDomain []users.Domain
+	for _, d := range data {
+		listDomain = append(listDomain, d.ToDomain())
+	}
+	return listDomain
 }

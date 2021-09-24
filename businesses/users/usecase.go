@@ -54,3 +54,10 @@ func (u *Usecase) FindByEmail(ctx context.Context, email string) (Domain, error)
 
 	return u.Repo.FindByEmail(ctx, email)
 }
+
+func (u *Usecase) GetAll(ctx context.Context) ([]Domain, error) {
+	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
+	defer cancel()
+
+	return u.Repo.GetAll(ctx)
+}

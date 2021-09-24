@@ -5,6 +5,7 @@ import (
 	"Pinjem/helpers"
 	"context"
 	"log"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -31,37 +32,37 @@ func (u *UserRepository) Login(ctx context.Context, email string, password strin
 	return user.ToDomain(), nil
 }
 
-func (u *UserRepository) Register(ctx context.Context, user users.Domain) (users.Domain, error) {
-	var userModel Users
-	err := u.Conn.Where("email = ?", user.Email).First(&userModel).Error
-	if err != nil {
-		log.Println(err)
-		log.Println(err.Error())
-		return users.Domain{}, err
-	}
-	password, err := helpers.HashPassword(user.Password)
-	if err != nil {
-		return users.Domain{}, err
-	}
-	createdUser := Users{
-		Email:       user.Email,
-		Password:    password,
-		Fullname:    user.Fullname,
-		NIK:         user.Nik,
-		PhoneNumber: user.PhoneNumber,
-		Address:     user.Address,
-		Provinsi:    user.Provinsi,
-		Kota:        user.Kota,
-		Kecamatan:   user.Kecamatan,
-		Desa:        user.Desa,
-		PostalCode:  user.PostalCode,
-		Role:        user.Role,
-		Status:      user.Status,
-		LinkKTP:     user.LinkKTP,
-	}
-	u.Conn.Create(&createdUser)
-	return createdUser.ToDomain(), nil
-}
+// func (u *UserRepository) Register(ctx context.Context, user users.Domain) (users.Domain, error) {
+// 	var userModel Users
+// 	err := u.Conn.Where("email = ?", user.Email).First(&userModel).Error
+// 	if err != nil {
+// 		log.Println(err)
+// 		log.Println(err.Error())
+// 		return users.Domain{}, err
+// 	}
+// 	password, err := helpers.HashPassword(user.Password)
+// 	if err != nil {
+// 		return users.Domain{}, err
+// 	}
+// 	createdUser := Users{
+// 		Email:       user.Email,
+// 		Password:    password,
+// 		Fullname:    user.Fullname,
+// 		NIK:         user.Nik,
+// 		PhoneNumber: user.PhoneNumber,
+// 		Address:     user.Address,
+// 		Provinsi:    user.Provinsi,
+// 		Kota:        user.Kota,
+// 		Kecamatan:   user.Kecamatan,
+// 		Desa:        user.Desa,
+// 		PostalCode:  user.PostalCode,
+// 		Role:        user.Role,
+// 		Status:      user.Status,
+// 		LinkKTP:     user.LinkKTP,
+// 	}
+// 	u.Conn.Create(&createdUser)
+// 	return createdUser.ToDomain(), nil
+// }
 
 func (u *UserRepository) FindByEmail(ctx context.Context, email string) (users.Domain, error) {
 	var user Users
@@ -69,6 +70,16 @@ func (u *UserRepository) FindByEmail(ctx context.Context, email string) (users.D
 		return users.Domain{}, err
 	}
 	return user.ToDomain(), nil
+}
+
+func (u *UserRepository) GetAll(ctx context.Context) ([]users.Domain, error) {
+	var usersModel []Users
+	if err := u.Conn.Find(&usersModel).Error; err != nil {
+		return nil, err
+	}
+	var result []users.Domain
+	result = ToListDomain(usersModel)
+	return result, nil
 }
 
 // func (u *UserRepository) FindByID(id uint) (*User, error) {
@@ -90,6 +101,7 @@ func (u *UserRepository) Create(ctx context.Context, user users.Domain) (users.D
 		Fullname:    user.Fullname,
 		NIK:         user.Nik,
 		PhoneNumber: user.PhoneNumber,
+		Birthdate:   user.Birthdate,
 		Address:     user.Address,
 		Provinsi:    user.Provinsi,
 		Kota:        user.Kota,
@@ -99,6 +111,8 @@ func (u *UserRepository) Create(ctx context.Context, user users.Domain) (users.D
 		Role:        user.Role,
 		Status:      user.Status,
 		LinkKTP:     user.LinkKTP,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
 	}
 	insertErr := u.Conn.Create(&createdUser).Error
 	if insertErr != nil {

@@ -58,6 +58,7 @@ func (a *AuthController) Register(c echo.Context) error {
 		Fullname:    userRegister.Fullname,
 		Nik:         userRegister.NIK,
 		PhoneNumber: userRegister.PhoneNumber,
+		Birthdate:   userRegister.Birthdate,
 		Address:     userRegister.Address,
 		Provinsi:    userRegister.Provinsi,
 		Kota:        userRegister.Kota,
@@ -70,8 +71,6 @@ func (a *AuthController) Register(c echo.Context) error {
 
 	ctx := c.Request().Context()
 
-	// check email and password
-	// user, err := a.Usecase.Register(ctx, userRegister.Email, userRegister.Password)
 	user, err := a.Usecase.Register(ctx, userDomain)
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
@@ -80,19 +79,13 @@ func (a *AuthController) Register(c echo.Context) error {
 		return controllers.ErrorResponse(c, http.StatusUnauthorized, exceptions.ErrInvalidCredentials)
 	}
 
-	// // generate token and cookie
-	// token, err := helpers.GenerateToken(int(user.Id))
-	// if err != nil {
-	// 	return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
-	// }
-	// expirationTime := time.Now().Add(time.Hour * 24)
-	// helpers.SetTokenCookie("token", token, expirationTime, c)
 	registerResponse := responses.RegisterResponse{
 		ID:          user.Id,
 		Email:       user.Email,
 		Fullname:    user.Fullname,
 		NIK:         user.Nik,
 		PhoneNumber: user.PhoneNumber,
+		Birthdate:   user.Birthdate,
 		Address:     user.Address,
 		Provinsi:    user.Provinsi,
 		Kota:        user.Kota,
@@ -101,6 +94,8 @@ func (a *AuthController) Register(c echo.Context) error {
 		PostalCode:  user.PostalCode,
 		Role:        user.Role,
 		Status:      user.Status,
+		CreatedAt:   user.CreatedAt,
+		UpdatedAt:   user.UpdatedAt,
 	}
 	return controllers.SuccessResponse(c, registerResponse)
 }

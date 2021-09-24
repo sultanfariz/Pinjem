@@ -5,6 +5,7 @@ import (
 	"Pinjem/app/routes"
 	_userUsecase "Pinjem/businesses/users"
 	_authController "Pinjem/controllers/auth"
+	_userController "Pinjem/controllers/users"
 	_userDb "Pinjem/drivers/databases/users"
 	"Pinjem/drivers/mysql"
 	"log"
@@ -36,11 +37,13 @@ func main() {
 
 	userUsecase := _userUsecase.NewUsecase(_userDb.NewUserRepository(Conn), timeoutContext)
 	authController := _authController.NewAuthController(*userUsecase)
+	userController := _userController.NewUserController(*userUsecase)
 
 	// Routes
 	e.Pre(middleware.RemoveTrailingSlash())
 	routesInit := routes.ControllerList{
 		AuthController: authController,
+		UserController: userController,
 	}
 	routesInit.InitRoutes(e)
 	log.Println(e.Start(":8080"))

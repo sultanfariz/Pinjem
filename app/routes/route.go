@@ -2,6 +2,8 @@ package routes
 
 import (
 	"Pinjem/controllers/auth"
+	"Pinjem/controllers/users"
+	"os"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -9,7 +11,7 @@ import (
 
 type ControllerList struct {
 	AuthController *auth.AuthController
-	// UserController *controllers.UserController
+	UserController *users.UserController
 	// BookController *controllers.BookController
 }
 
@@ -21,7 +23,7 @@ func (c ControllerList) InitRoutes(e *echo.Echo) {
 		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
 	}))
 
-	// jwt := middleware.JWT([]byte(os.Getenv("JWT_SECRET")))
+	jwt := middleware.JWT([]byte(os.Getenv("JWT_SECRET")))
 	v1.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: "${method} ${uri} ${status} ${time_rfc3339} ${latency_human}\n",
 	}))
@@ -30,6 +32,8 @@ func (c ControllerList) InitRoutes(e *echo.Echo) {
 
 	v1.POST("/register", c.AuthController.Register)
 	v1.POST("/login", c.AuthController.Login)
-	// v1.GET("/users", c.UserController.GetAllUsers, jwt)
+	// v1.GET("/users", c.AuthController.GetAll, jwt)
+	// v1.GET("/users", c.UserController.GetAll)
+	v1.GET("/users", c.UserController.GetAll, jwt)
 	// v1.GET("/users/:userId", c.UserController.GetUserById, jwt)
 }

@@ -29,10 +29,10 @@ type Domain struct {
 
 type DomainRepository interface {
 	GetAll(ctx context.Context) ([]Domain, error)
-	// GetById(ctx context.Context, id int64) (Domain, error)
+	GetById(ctx context.Context, id uint) (Domain, error)
 	Create(ctx context.Context, domain Domain) (Domain, error)
 	// Update(ctx context.Context, domain Domain) (Domain, error)
-	// Delete(ctx context.Context, id int64) (Domain, error)
+	// Delete(ctx context.Context, id uint) (Domain, error)
 	Login(ctx context.Context, email string, password string) (Domain, error)
 	// Register(ctx context.Context, domain Domain) (Domain, error)
 	FindByEmail(ctx context.Context, email string) (Domain, error)
@@ -40,10 +40,10 @@ type DomainRepository interface {
 
 type DomainService interface {
 	GetAll(ctx context.Context) ([]Domain, error)
-	// GetById(ctx context.Context, id int64) (Domain, error)
+	GetById(ctx context.Context, id uint) (Domain, error)
 	Create(ctx context.Context, domain Domain) (Domain, error)
 	// Update(ctx context.Context, domain Domain) (Domain, error)
-	// Delete(ctx context.Context, id int64) (Domain, error)
+	// Delete(ctx context.Context, id uint) (Domain, error)
 	Login(ctx context.Context, domain Domain) (Domain, error)
 	FindByEmail(ctx context.Context, email string) (Domain, error)
 }

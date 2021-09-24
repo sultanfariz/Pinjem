@@ -1,11 +1,5 @@
 package requests
 
-import (
-	"time"
-
-	"gorm.io/gorm"
-)
-
 type LoginRequest struct {
 	Email    string `json:"email" form:"email"`
 	Password string `json:"password" form:"password"`
@@ -13,21 +7,18 @@ type LoginRequest struct {
 
 type RegisterRequest struct {
 	ID          uint
-	Email       string         `json:"email" form:"email"`
-	Password    string         `json:"password" form:"password"`
-	Fullname    string         `json:"fullname" form:"fullname"`
-	NIK         string         `json:"nik" form:"nik"`
-	PhoneNumber string         `json:"phoneNumber" form:"phoneNumber"`
-	Birthdate   string         `json:"birthdate" form:"birthdate"`
-	Address     string         `json:"address" form:"address"`
-	Provinsi    string         `json:"provinsi" form:"provinsi"`
-	Kota        string         `json:"kota" form:"kota"`
-	Kecamatan   string         `json:"kecamatan" form:"kecamatan"`
-	Desa        string         `json:"desa" form:"desa"`
-	PostalCode  string         `json:"postalCode" form:"postalCode"`
-	Role        string         `json:"role" form:"role"`
-	Status      int            `json:"status" form:"status"`
-	CreatedAt   time.Time      `json:"createdAt" form:"createdAt"`
-	UpdatedAt   time.Time      `json:"updatedAt" form:"updatedAt"`
-	DeletedAt   gorm.DeletedAt `json:"deletedAt" form:"deletedAt"`
+	Email       string `json:"email" form:"email"`
+	Password    string `json:"password" form:"password"`
+	Fullname    string `json:"fullname" form:"fullname"`
+	NIK         string `json:"nik" form:"nik"`
+	PhoneNumber string `json:"phoneNumber" form:"phoneNumber"`
+	Birthdate   string `json:"birthdate" form:"birthdate"`
+	Address     string `json:"address" form:"address"`
+	Provinsi    string `json:"provinsi" form:"provinsi"`
+	Kota        string `json:"kota" form:"kota"`
+	Kecamatan   string `json:"kecamatan" form:"kecamatan"`
+	Desa        string `json:"desa" form:"desa"`
+	PostalCode  string `json:"postalCode" form:"postalCode"`
+	Role        string `json:"role" form:"role"`
+	Status      int    `json:"status" form:"status"`
 }

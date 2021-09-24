@@ -2,6 +2,7 @@ package users
 
 import (
 	"Pinjem/exceptions"
+
 	context "context"
 	"time"
 )
@@ -36,14 +37,12 @@ func (u *Usecase) Register(ctx context.Context, domain Domain) (Domain, error) {
 	defer cancel()
 
 	user, err := u.Repo.FindByEmail(ctx, domain.Email)
-	if err != nil {
-		return Domain{}, err
-	}
-	if user.Id != 0 {
+	if user.Id == 0 {
+		return u.Repo.Create(ctx, domain)
+	} else if user.Id != 0 {
 		return Domain{}, exceptions.ErrUserAlreadyExists
 	}
-
-	return u.Repo.Create(ctx, domain)
+	return Domain{}, err
 }
 
 func (u *Usecase) FindByEmail(ctx context.Context, email string) (Domain, error) {

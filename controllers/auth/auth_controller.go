@@ -47,3 +47,60 @@ func (a *AuthController) Login(c echo.Context) error {
 	helpers.SetTokenCookie("token", token, expirationTime, c)
 	return controllers.SuccessResponse(c, responses.LoginResponse{Token: token})
 }
+
+func (a *AuthController) Register(c echo.Context) error {
+	userRegister := requests.RegisterRequest{}
+	c.Bind(&userRegister)
+
+	userDomain := users.Domain{
+		Email:       userRegister.Email,
+		Password:    userRegister.Password,
+		Fullname:    userRegister.Fullname,
+		Nik:         userRegister.NIK,
+		PhoneNumber: userRegister.PhoneNumber,
+		Address:     userRegister.Address,
+		Provinsi:    userRegister.Provinsi,
+		Kota:        userRegister.Kota,
+		Kecamatan:   userRegister.Kecamatan,
+		Desa:        userRegister.Desa,
+		PostalCode:  userRegister.PostalCode,
+		Role:        userRegister.Role,
+		Status:      userRegister.Status,
+	}
+
+	ctx := c.Request().Context()
+
+	// check email and password
+	// user, err := a.Usecase.Register(ctx, userRegister.Email, userRegister.Password)
+	user, err := a.Usecase.Register(ctx, userDomain)
+	if err != nil {
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+	}
+	if user.Id == 0 {
+		return controllers.ErrorResponse(c, http.StatusUnauthorized, exceptions.ErrInvalidCredentials)
+	}
+
+	// // generate token and cookie
+	// token, err := helpers.GenerateToken(int(user.Id))
+	// if err != nil {
+	// 	return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+	// }
+	// expirationTime := time.Now().Add(time.Hour * 24)
+	// helpers.SetTokenCookie("token", token, expirationTime, c)
+	registerResponse := responses.RegisterResponse{
+		ID:          user.Id,
+		Email:       user.Email,
+		Fullname:    user.Fullname,
+		NIK:         user.Nik,
+		PhoneNumber: user.PhoneNumber,
+		Address:     user.Address,
+		Provinsi:    user.Provinsi,
+		Kota:        user.Kota,
+		Kecamatan:   user.Kecamatan,
+		Desa:        user.Desa,
+		PostalCode:  user.PostalCode,
+		Role:        user.Role,
+		Status:      user.Status,
+	}
+	return controllers.SuccessResponse(c, registerResponse)
+}

@@ -33,7 +33,6 @@ type LoginResponse struct {
 type RegisterResponse struct {
 	ID          uint
 	Email       string    `json:"email"`
-	Password    string    `json:"password"`
 	Fullname    string    `json:"fullname"`
 	NIK         string    `json:"nik"`
 	PhoneNumber string    `json:"phoneNumber"`

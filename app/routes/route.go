@@ -28,7 +28,7 @@ func (c ControllerList) InitRoutes(e *echo.Echo) {
 
 	v1.Static("/uploads", "public")
 
-	// v1.POST("/register", c.AuthController.Register)
+	v1.POST("/register", c.AuthController.Register)
 	v1.POST("/login", c.AuthController.Login)
 	// v1.GET("/users", c.UserController.GetAllUsers, jwt)
 	// v1.GET("/users/:userId", c.UserController.GetUserById, jwt)

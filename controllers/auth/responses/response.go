@@ -45,6 +45,7 @@ type RegisterResponse struct {
 	PostalCode  string    `json:"postalCode"`
 	Role        string    `json:"role"`
 	Status      int       `json:"status"`
+	LinkKTP     string    `json:"linkKTP"`
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
 }

@@ -7,7 +7,9 @@ import (
 	"Pinjem/controllers/auth/responses"
 	"Pinjem/exceptions"
 	"Pinjem/helpers"
+	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -52,6 +54,23 @@ func (a *AuthController) Register(c echo.Context) error {
 	userRegister := requests.RegisterRequest{}
 	c.Bind(&userRegister)
 
+	// upload file KTP
+	file, err := c.FormFile("ktp")
+	if err != nil {
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+	}
+
+	split := strings.Split(file.Filename, ".")
+	extension := split[len(split)-1]
+	fileName := strings.ReplaceAll(fmt.Sprintf("KTP_%s", userRegister.Fullname), " ", "_")
+	filePath := "KTP"
+	fileURL, fileErr := helpers.UploadFile(filePath, fileName, extension, file)
+	if fileErr != nil {
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, fileErr)
+	}
+
+	fmt.Println(fileURL)
+
 	userDomain := users.Domain{
 		Email:       userRegister.Email,
 		Password:    userRegister.Password,
@@ -67,6 +86,7 @@ func (a *AuthController) Register(c echo.Context) error {
 		PostalCode:  userRegister.PostalCode,
 		Role:        userRegister.Role,
 		Status:      userRegister.Status,
+		LinkKTP:     fileURL,
 	}
 
 	ctx := c.Request().Context()
@@ -94,6 +114,7 @@ func (a *AuthController) Register(c echo.Context) error {
 		PostalCode:  user.PostalCode,
 		Role:        user.Role,
 		Status:      user.Status,
+		LinkKTP:     user.LinkKTP,
 		CreatedAt:   user.CreatedAt,
 		UpdatedAt:   user.UpdatedAt,
 	}

@@ -25,8 +25,6 @@ func UploadFile(filePath string, fileName string, extension string, file *multip
 	fileURL := fmt.Sprintf("public/%s/%s", filePath, fileName)
 	dst, err := os.Create(fileURL)
 	if err != nil {
-		fmt.Println("disini")
-		fmt.Println(err)
 		return "", err
 	}
 	defer dst.Close()

@@ -3,9 +3,12 @@ package main
 import (
 	"Pinjem/app/config"
 	"Pinjem/app/routes"
+	_bookUsecase "Pinjem/businesses/books"
 	_userUsecase "Pinjem/businesses/users"
 	_authController "Pinjem/controllers/auth"
+	_bookController "Pinjem/controllers/books"
 	_userController "Pinjem/controllers/users"
+	_bookDb "Pinjem/drivers/databases/books"
 	_userDb "Pinjem/drivers/databases/users"
 	"Pinjem/drivers/mysql"
 	"log"
@@ -36,14 +39,17 @@ func main() {
 	timeoutContext := time.Duration(timeoutContextEnv) * time.Second
 
 	userUsecase := _userUsecase.NewUsecase(_userDb.NewUserRepository(Conn), timeoutContext)
+	bookUseCase := _bookUsecase.NewUsecase(_bookDb.NewBookRepository(Conn), timeoutContext)
 	authController := _authController.NewAuthController(*userUsecase)
 	userController := _userController.NewUserController(*userUsecase)
+	bookController := _bookController.NewBookController(*bookUseCase)
 
 	// Routes
 	e.Pre(middleware.RemoveTrailingSlash())
 	routesInit := routes.ControllerList{
 		AuthController: authController,
 		UserController: userController,
+		BookController: bookController,
 	}
 	routesInit.InitRoutes(e)
 	log.Println(e.Start(":8080"))

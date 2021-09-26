@@ -2,6 +2,7 @@ package routes
 
 import (
 	"Pinjem/controllers/auth"
+	"Pinjem/controllers/books"
 	"Pinjem/controllers/users"
 	"os"
 
@@ -12,7 +13,7 @@ import (
 type ControllerList struct {
 	AuthController *auth.AuthController
 	UserController *users.UserController
-	// BookController *controllers.BookController
+	BookController *books.BookController
 }
 
 func (c ControllerList) InitRoutes(e *echo.Echo) {
@@ -30,10 +31,16 @@ func (c ControllerList) InitRoutes(e *echo.Echo) {
 
 	v1.Static("/uploads", "public")
 
+	// user routes
 	v1.POST("/register", c.AuthController.Register)
 	v1.POST("/login", c.AuthController.Login)
-	// v1.GET("/users", c.AuthController.GetAll, jwt)
-	// v1.GET("/users", c.UserController.GetAll)
 	v1.GET("/users", c.UserController.GetAll, jwt)
 	v1.GET("/users/:userId", c.UserController.GetById)
+
+	// book routes
+	// v1.GET("/books", c.BookController.GetAll, jwt)
+	v1.GET("/books/:bookId", c.BookController.GetById)
+	v1.POST("/books/:userId", c.BookController.Create, jwt)
+	// v1.POST("/books/:userId", c.BookController.Create)
+	// v1.PUT("/books/:bookId", c.BookController.Update, jwt)
 }

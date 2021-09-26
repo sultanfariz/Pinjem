@@ -8,7 +8,6 @@ import (
 type UserResponse struct {
 	ID          uint
 	Email       string    `json:"email"`
-	Password    string    `json:"password"`
 	Fullname    string    `json:"fullname"`
 	NIK         string    `json:"nik"`
 	PhoneNumber string    `json:"phoneNumber"`
@@ -30,7 +29,6 @@ func FromDomain(domain users.Domain) UserResponse {
 	return UserResponse{
 		ID:          domain.Id,
 		Email:       domain.Email,
-		Password:    domain.Password,
 		Fullname:    domain.Fullname,
 		NIK:         domain.Nik,
 		PhoneNumber: domain.PhoneNumber,

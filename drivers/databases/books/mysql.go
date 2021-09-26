@@ -36,9 +36,9 @@ func (b *BookRepository) GetById(ctx context.Context, id uint) (books.Domain, er
 
 func (b *BookRepository) Create(ctx context.Context, book books.Domain) (books.Domain, error) {
 	createdBook := Books{
-		PublisherId: book.PublisherId,
 		ISBN:        book.ISBN,
 		Title:       book.Title,
+		Publisher:   book.Publisher,
 		Description: book.Description,
 		MinDeposit:  book.MinDeposit,
 		Status:      book.Status,

@@ -7,18 +7,20 @@ import (
 
 type Domain struct {
 	Id          uint
-	PublisherId string
 	BookId      string
 	WorkId      string
 	ISBN        string
+	Publisher   []string
+	PublishDate string
 	Title       string
 	// Category    string
-	Description string
-	MinDeposit  uint
-	Status      bool
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	DeletedAt   time.Time
+	Description   string
+	NumberOfPages uint
+	MinDeposit    uint
+	Status        bool
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	DeletedAt     time.Time
 }
 
 type DomainRepository interface {

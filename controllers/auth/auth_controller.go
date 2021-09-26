@@ -69,8 +69,6 @@ func (a *AuthController) Register(c echo.Context) error {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, fileErr)
 	}
 
-	fmt.Println(fileURL)
-
 	userDomain := users.Domain{
 		Email:       userRegister.Email,
 		Password:    userRegister.Password,

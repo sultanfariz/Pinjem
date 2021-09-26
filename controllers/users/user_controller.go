@@ -56,7 +56,7 @@ func (u *UserController) GetById(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	idParam := c.Param("userId")
-	idInt, _ := (strconv.Atoi(idParam))
+	idInt, _ := strconv.Atoi(idParam)
 	id := uint(idInt)
 	user, err := u.Usecase.GetById(ctx, id)
 	if err != nil {

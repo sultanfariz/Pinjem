@@ -8,17 +8,19 @@ import (
 )
 
 type Books struct {
-	ID          uint   `gorm:"primary_key"`
-	PublisherId string `gorm:"type:varchar(100);not null"`
-	ISBN        string `gorm:"type:varchar(13);not null"`
-	Title       string `gorm:"type:varchar(100);not null"`
+	ID          uint     `gorm:"primary_key"`
+	ISBN        string   `gorm:"type:varchar(13);not null"`
+	Publisher   []string `gorm:"type:varchar(100);not null"`
+	PublishDate string   `gorm:"type:varchar(100);not null"`
+	Title       string   `gorm:"type:varchar(100);not null"`
 	// Category	string `gorm:"type:varchar(100);not null"`
-	Description string `gorm:"type:text;not null"`
-	MinDeposit  uint   `gorm:"not null"`
-	Status      bool   `gorm:"not null"`
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	DeletedAt   gorm.DeletedAt `gorm:"index"`
+	Description   string `gorm:"type:text;not null"`
+	MinDeposit    uint   `gorm:"not null"`
+	NumberOfPages uint   `gorm:"type:int;not null"`
+	Status        bool   `gorm:"not null"`
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	DeletedAt     gorm.DeletedAt `gorm:"index"`
 }
 
 func (u *Books) BeforeCreate(tx *gorm.DB) (err error) {
@@ -29,10 +31,10 @@ func (u *Books) BeforeCreate(tx *gorm.DB) (err error) {
 
 func (u *Books) ToDomain() books.Domain {
 	return books.Domain{
-		Id:          u.ID,
-		PublisherId: u.PublisherId,
-		ISBN:        u.ISBN,
-		Title:       u.Title,
+		Id:        u.ID,
+		ISBN:      u.ISBN,
+		Publisher: u.Publisher,
+		Title:     u.Title,
 		// Category:    u.Category,
 		Description: u.Description,
 		MinDeposit:  u.MinDeposit,
@@ -44,10 +46,10 @@ func (u *Books) ToDomain() books.Domain {
 
 func FromDomain(domain books.Domain) Books {
 	return Books{
-		ID:          domain.Id,
-		PublisherId: domain.PublisherId,
-		ISBN:        domain.ISBN,
-		Title:       domain.Title,
+		ID:        domain.Id,
+		Publisher: domain.Publisher,
+		ISBN:      domain.ISBN,
+		Title:     domain.Title,
 		// Category:    domain.Category,
 		Description: domain.Description,
 		MinDeposit:  domain.MinDeposit,

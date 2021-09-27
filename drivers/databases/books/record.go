@@ -48,10 +48,12 @@ func (u *Books) BeforeCreate(tx *gorm.DB) (err error) {
 
 func (u *Books) ToDomain() books.Domain {
 	return books.Domain{
-		Id:        u.ID,
-		ISBN:      u.ISBN,
-		Publisher: u.Publisher,
-		Title:     u.Title,
+		Id:          u.ID,
+		BookId:      u.BookId,
+		ISBN:        u.ISBN,
+		Publisher:   u.Publisher,
+		PublishDate: u.PublishDate,
+		Title:       u.Title,
 		// Category:    u.Category,
 		Description:   u.Description,
 		Language:      u.Language,

@@ -34,7 +34,7 @@ func (b *BookRepository) GetById(ctx context.Context, id uint) (books.Domain, er
 	return book.ToDomain(), nil
 }
 
-func (b *BookRepository) GetByISBN(ctx context.Context, isbn uint) (books.Domain, error) {
+func (b *BookRepository) GetByISBN(ctx context.Context, isbn string) (books.Domain, error) {
 	var book Books
 	if err := b.Conn.Where("isbn = ?", isbn).First(&book).Error; err != nil {
 		return books.Domain{}, err
@@ -48,6 +48,7 @@ func (b *BookRepository) Create(ctx context.Context, book books.Domain) (books.D
 		ISBN:          book.ISBN,
 		Title:         book.Title,
 		Publisher:     book.Publisher,
+		PublishDate:   book.PublishDate,
 		Description:   book.Description,
 		Language:      book.Language,
 		Picture:       book.Picture,

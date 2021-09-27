@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -94,13 +93,17 @@ func (b *BookController) Create(c echo.Context) error {
 	createdBook := requests.CreateBook{}
 	c.Bind(&createdBook)
 
-	idParam := c.Param("isbn")
-	// sbn := c.Param("userId")
-	// isbn := "9780140328721"
-	log.Println(idParam)
-	log.Println(createdBook)
+	// check if book already exist
+	dbBook, err := b.Usecase.GetByISBN(ctx, createdBook.ISBN)
+	if err != nil && err.Error() != "record not found" {
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+	}
+	if dbBook.ISBN != "" {
+		return controllers.ErrorResponse(c, http.StatusForbidden, fmt.Errorf("ISBN already exist"))
+	}
+
+	// get book from google api by isbn
 	url := fmt.Sprintf("https://www.googleapis.com/books/v1/volumes?q=+isbn:%s", createdBook.ISBN)
-	log.Println(url)
 	response, err := http.Get(url)
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
@@ -109,33 +112,9 @@ func (b *BookController) Create(c echo.Context) error {
 	var bookReq requests.GetGoogleBookByISBN
 	json.Unmarshal(responseData, &bookReq)
 
-	// // parse authors and works id to array
-	// authorArr := []string{}
-	// for _, author := range bookReq.Items[0].VolumeInfo.Authors {
-	// 	// author.Key = author.Key[:len(author.Key)-1]
-	// 	authorKeySplit := strings.Split(author.Key, "/")
-	// 	authorArr = append(authorArr, authorKeySplit[len(authorKeySplit)-1])
-	// }
-	// workArr := []string{}
-	// for _, work := range bookReq.WorkId {
-	// 	workKeySplit := strings.Split(work.Key, "/")
-	// 	workArr = append(workArr, workKeySplit[len(workKeySplit)-1])
-	// }
-	// bookKeySplit := strings.Split(bookReq.BookId, "/")
-	// bookReq.BookId = bookKeySplit[len(bookKeySplit)-1]
-
-	// get book data by workId
-	// getBookByWorkUrl := fmt.Sprintf("https://openlibrary.org/api/books?bibkeys=ISBN:%s&jscmd=data&format=json", bookReq.ISBN)
-	// getBookByWorkUrl := fmt.Sprintf("https://openlibrary.org/works/%s.json", workArr[0])
-	// log.Println("---------------------")
-	// response, err = http.Get(getBookByWorkUrl)
-	// if err != nil {
-	// 	return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
-	// }
-	// responseData, _ = ioutil.ReadAll(response.Body)
-	// var bookByWorkReq requests.GetBookByWorkId
-	// json.Unmarshal(responseData, &bookByWorkReq)
-	// log.Println(bookByWorkReq)
+	if len(bookReq.Items) == 0 {
+		return controllers.ErrorResponse(c, http.StatusNotFound, fmt.Errorf("Book not found"))
+	}
 
 	bookDomain := books.Domain{
 		BookId:        bookReq.Items[0].Id,
@@ -150,11 +129,6 @@ func (b *BookController) Create(c echo.Context) error {
 		MinDeposit:    createdBook.MinDeposit,
 		Status:        createdBook.Status,
 	}
-
-	// book := new(books.Book)
-	// if err := c.Bind(book); err != nil {
-	// 	return controllers.ErrorResponse(c, http.StatusBadRequest, err)
-	// }
 
 	book, err := b.Usecase.Create(ctx, bookDomain)
 	if err != nil {

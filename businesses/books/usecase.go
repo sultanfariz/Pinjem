@@ -31,6 +31,13 @@ func (u *Usecase) GetById(ctx context.Context, id uint) (Domain, error) {
 	return u.Repo.GetById(ctx, id)
 }
 
+func (u *Usecase) GetByISBN(ctx context.Context, isbn string) (Domain, error) {
+	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
+	defer cancel()
+
+	return u.Repo.GetByISBN(ctx, isbn)
+}
+
 func (u *Usecase) Create(ctx context.Context, domain Domain) (Domain, error) {
 	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
 	defer cancel()

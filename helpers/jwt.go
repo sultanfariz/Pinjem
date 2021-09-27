@@ -28,7 +28,7 @@ func GenerateToken(userId int) (string, error) {
 
 	claims := jwtClaim{userId, jwt.StandardClaims{
 		// ExpiresAt: jwt.TimeFunc().Add(time.Hour * 24).Unix(),
-		ExpiresAt: time.Now().Local().Add(time.Hour * 24).Unix(),
+		ExpiresAt: time.Now().Local().Add(time.Hour * 2400).Unix(),
 	}}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

@@ -40,7 +40,8 @@ func (c ControllerList) InitRoutes(e *echo.Echo) {
 	// book routes
 	// v1.GET("/books", c.BookController.GetAll, jwt)
 	v1.GET("/books/:bookId", c.BookController.GetById)
-	v1.POST("/books/:userId", c.BookController.Create, jwt)
+	// v1.POST("/books/:isbn", c.BookController.Create, jwt)
+	v1.POST("/books", c.BookController.Create, jwt)
 	// v1.POST("/books/:userId", c.BookController.Create)
 	// v1.PUT("/books/:bookId", c.BookController.Update, jwt)
 }

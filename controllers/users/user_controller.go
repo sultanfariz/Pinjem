@@ -4,6 +4,7 @@ import (
 	"Pinjem/businesses/users"
 	"Pinjem/controllers"
 	"Pinjem/controllers/auth/responses"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -56,6 +57,7 @@ func (u *UserController) GetById(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	idParam := c.Param("userId")
+	log.Println(idParam)
 	idInt, _ := strconv.Atoi(idParam)
 	id := uint(idInt)
 	user, err := u.Usecase.GetById(ctx, id)

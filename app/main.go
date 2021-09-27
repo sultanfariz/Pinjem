@@ -33,7 +33,7 @@ func main() {
 		Database: os.Getenv("DB_DATABASE"),
 	}
 	Conn := configDB.InitDB()
-	Conn.AutoMigrate(&_userDb.Users{})
+	Conn.AutoMigrate(&_userDb.Users{}, &_bookDb.Books{})
 
 	timeoutContextEnv, _ := strconv.Atoi(os.Getenv("TIMEOUT_CONTEXT"))
 	timeoutContext := time.Duration(timeoutContextEnv) * time.Second

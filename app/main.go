@@ -45,7 +45,7 @@ func main() {
 	bookUseCase := _bookUsecase.NewUsecase(_bookDb.NewBookRepository(Conn), timeoutContext)
 	depositUseCase := _depositUsecase.NewUsecase(_depositDb.NewDepositRepository(Conn), timeoutContext)
 	authController := _authController.NewAuthController(*userUsecase, *depositUseCase)
-	userController := _userController.NewUserController(*userUsecase)
+	userController := _userController.NewUserController(*userUsecase, *depositUseCase)
 	bookController := _bookController.NewBookController(*bookUseCase)
 	depositController := _depositController.NewDepositController(*depositUseCase)
 

@@ -18,9 +18,10 @@ type UserController struct {
 	DepositUsecase deposits.Usecase
 }
 
-func NewUserController(u users.Usecase) *UserController {
+func NewUserController(u users.Usecase, d deposits.Usecase) *UserController {
 	return &UserController{
-		Usecase: u,
+		Usecase:        u,
+		DepositUsecase: d,
 	}
 }
 

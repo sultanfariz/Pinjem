@@ -41,7 +41,7 @@ func (a *AuthController) Login(c echo.Context) error {
 	}
 
 	// generate token and cookie
-	token, err := helpers.GenerateToken(int(user.Id))
+	token, err := helpers.GenerateToken(int(user.Id), user.Role)
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
 	}

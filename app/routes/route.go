@@ -4,6 +4,7 @@ import (
 	"Pinjem/controllers/auth"
 	"Pinjem/controllers/books"
 	"Pinjem/controllers/users"
+	"Pinjem/helpers"
 	"os"
 
 	"github.com/labstack/echo/v4"
@@ -18,13 +19,14 @@ type ControllerList struct {
 
 func (c ControllerList) InitRoutes(e *echo.Echo) {
 	v1 := e.Group("/api/v1")
-	v1.Use(middleware.Recover())
+	// v1.Use(middleware.Recover())
 	v1.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
 		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
 	}))
 
 	jwt := middleware.JWT([]byte(os.Getenv("JWT_SECRET")))
+	// userRoleValidation := helpers.UserRoleValidation(v1, v1)
 	v1.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: "${method} ${uri} ${status} ${time_rfc3339} ${latency_human}\n",
 	}))
@@ -38,10 +40,15 @@ func (c ControllerList) InitRoutes(e *echo.Echo) {
 	v1.GET("/users/:userId", c.UserController.GetById)
 
 	// book routes
-	// v1.GET("/books", c.BookController.GetAll, jwt)
-	v1.GET("/books/:bookId", c.BookController.GetById)
-	// v1.POST("/books/:isbn", c.BookController.Create, jwt)
-	v1.POST("/books", c.BookController.Create, jwt)
-	// v1.POST("/books/:userId", c.BookController.Create)
-	// v1.PUT("/books/:bookId", c.BookController.Update, jwt)
+	// v1.GET("/books", c.BookController.GetAll)
+	books := v1.Group("/books")
+	books.GET("/", c.BookController.GetAll)
+	books.GET("/:bookId", c.BookController.GetById)
+	// books.Use(helpers.UserRoleValidation)
+	books.Use(helpers.AdminRoleValidation)
+	books.POST("", c.BookController.Create, jwt)
+	// books.POST("/books/:isbn", c.BookController.Create, jwt)
+	// books.POST("/books", c.BookController.Create, jwt, helpers.UserRoleValidation)
+	// books.POST("/books/:userId", c.BookController.Create)
+	// books.PUT("/books/:bookId", c.BookController.Update, jwt)
 }

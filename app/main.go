@@ -10,7 +10,7 @@ import (
 	_userController "Pinjem/controllers/users"
 	_bookDb "Pinjem/drivers/databases/books"
 	_userDb "Pinjem/drivers/databases/users"
-	"Pinjem/drivers/mysql"
+	postgres "Pinjem/drivers/postgresql"
 	"log"
 	"os"
 	"strconv"
@@ -25,7 +25,7 @@ func main() {
 	config.LoadEnv()
 
 	// connect to db
-	configDB := mysql.ConfigDB{
+	configDB := postgres.ConfigDB{
 		Host:     os.Getenv("DB_HOST"),
 		Port:     os.Getenv("DB_PORT"),
 		User:     os.Getenv("DB_USER"),
@@ -33,7 +33,7 @@ func main() {
 		Database: os.Getenv("DB_DATABASE"),
 	}
 	Conn := configDB.InitDB()
-	Conn.AutoMigrate(&_userDb.Users{}, &_bookDb.Books{})
+	Conn.Debug().AutoMigrate(&_userDb.Users{}, &_bookDb.Books{})
 
 	timeoutContextEnv, _ := strconv.Atoi(os.Getenv("TIMEOUT_CONTEXT"))
 	timeoutContext := time.Duration(timeoutContextEnv) * time.Second

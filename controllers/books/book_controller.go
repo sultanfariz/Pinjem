@@ -18,6 +18,10 @@ type BookController struct {
 	Usecase books.Usecase
 }
 
+type Header struct {
+	Cookie string `json:"cookie"`
+}
+
 func NewBookController(u books.Usecase) *BookController {
 	return &BookController{
 		Usecase: u,

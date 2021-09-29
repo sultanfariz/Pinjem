@@ -3,6 +3,7 @@ package routes
 import (
 	"Pinjem/controllers/auth"
 	"Pinjem/controllers/books"
+	"Pinjem/controllers/deposits"
 	"Pinjem/controllers/users"
 	"Pinjem/helpers"
 	"os"
@@ -12,9 +13,10 @@ import (
 )
 
 type ControllerList struct {
-	AuthController *auth.AuthController
-	UserController *users.UserController
-	BookController *books.BookController
+	AuthController    *auth.AuthController
+	UserController    *users.UserController
+	BookController    *books.BookController
+	DepositController *deposits.DepositController
 }
 
 func (c ControllerList) InitRoutes(e *echo.Echo) {
@@ -33,11 +35,17 @@ func (c ControllerList) InitRoutes(e *echo.Echo) {
 
 	v1.Static("/uploads", "public")
 
-	// user routes
+	// auth routes
 	v1.POST("/register", c.AuthController.Register)
 	v1.POST("/login", c.AuthController.Login)
-	v1.GET("/users", c.UserController.GetAll, jwt)
-	v1.GET("/users/:userId", c.UserController.GetById)
+
+	// user routes
+	users := v1.Group("/users")
+	users.GET("/my", c.UserController.GetMyUserProfile, jwt)
+
+	users.Use(helpers.AdminRoleValidation)
+	users.GET("/all", c.UserController.GetAll, jwt)
+	users.GET("/:userId", c.UserController.GetById, jwt)
 
 	// book routes
 	// v1.GET("/books", c.BookController.GetAll)
@@ -51,4 +59,12 @@ func (c ControllerList) InitRoutes(e *echo.Echo) {
 	// books.POST("/books", c.BookController.Create, jwt, helpers.UserRoleValidation)
 	// books.POST("/books/:userId", c.BookController.Create)
 	// books.PUT("/books/:bookId", c.BookController.Update, jwt)
+
+	// deposit routes
+	deposits := v1.Group("/deposits")
+	deposits.POST("/my", c.DepositController.Update, jwt)
+	deposits.Use(helpers.AdminRoleValidation)
+	deposits.GET("/:userId", c.DepositController.GetByUserId, jwt)
+	deposits.GET("", c.DepositController.GetAll, jwt)
+
 }

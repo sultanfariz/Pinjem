@@ -21,12 +21,13 @@ type Users struct {
 	Kecamatan   string `gorm:"not null"`
 	Desa        string `gorm:"not null"`
 	PostalCode  string `gorm:"not null"`
-	Role        string `gorm:"not null;type:enum('admin', 'customer');default:'customer'"`
-	Status      int    `gorm:"not null"`
-	LinkKTP     string `gorm:"not null"`
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	DeletedAt   gorm.DeletedAt `gorm:"index"`
+	// Role        string `gorm:"not null;type:enum('admin', 'customer');default:'customer'"`
+	Role      string `gorm:"not null;default:'customer'"`
+	Status    int    `gorm:"not null"`
+	LinkKTP   string `gorm:"not null"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
 func (Users) TableName() string {

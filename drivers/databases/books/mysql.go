@@ -26,9 +26,17 @@ func (b *BookRepository) GetAll(ctx context.Context) ([]books.Domain, error) {
 	return result, nil
 }
 
-func (b *BookRepository) GetById(ctx context.Context, id uint) (books.Domain, error) {
+func (b *BookRepository) GetById(ctx context.Context, id string) (books.Domain, error) {
 	var book Books
-	if err := b.Conn.Where("id = ?", id).First(&book).Error; err != nil {
+	if err := b.Conn.Where("book_id = ?", id).First(&book).Error; err != nil {
+		return books.Domain{}, err
+	}
+	return book.ToDomain(), nil
+}
+
+func (b *BookRepository) GetByISBN(ctx context.Context, isbn string) (books.Domain, error) {
+	var book Books
+	if err := b.Conn.Where("isbn = ?", isbn).First(&book).Error; err != nil {
 		return books.Domain{}, err
 	}
 	return book.ToDomain(), nil
@@ -36,14 +44,19 @@ func (b *BookRepository) GetById(ctx context.Context, id uint) (books.Domain, er
 
 func (b *BookRepository) Create(ctx context.Context, book books.Domain) (books.Domain, error) {
 	createdBook := Books{
-		ISBN:        book.ISBN,
-		Title:       book.Title,
-		Publisher:   book.Publisher,
-		Description: book.Description,
-		MinDeposit:  book.MinDeposit,
-		Status:      book.Status,
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
+		BookId:        book.BookId,
+		ISBN:          book.ISBN,
+		Title:         book.Title,
+		Publisher:     book.Publisher,
+		PublishDate:   book.PublishDate,
+		Description:   book.Description,
+		Language:      book.Language,
+		Picture:       book.Picture,
+		NumberOfPages: book.NumberOfPages,
+		MinDeposit:    book.MinDeposit,
+		Status:        book.Status,
+		CreatedAt:     time.Now(),
+		UpdatedAt:     time.Now(),
 	}
 	insertErr := b.Conn.Create(&createdBook).Error
 	if insertErr != nil {

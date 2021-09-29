@@ -7,14 +7,31 @@ import (
 	"gorm.io/gorm"
 )
 
+// type Books struct {
+// 	ID          uint     `gorm:"primary_key"`
+// 	ISBN        string   `gorm:"type:varchar(13);not null"`
+// 	Publisher   []string `gorm:"type:varchar(100);not null"`
+// 	PublishDate string   `gorm:"type:varchar(100);not null"`
+// 	Title       string   `gorm:"type:varchar(100);not null"`
+// 	// Category	string `gorm:"type:varchar(100);not null"`
+// 	Description   string `gorm:"type:text;not null"`
+// 	MinDeposit    uint   `gorm:"not null"`
+// 	NumberOfPages uint   `gorm:"type:int;not null"`
+// 	Status        bool   `gorm:"not null"`
+// 	CreatedAt     time.Time
+// 	UpdatedAt     time.Time
+// 	DeletedAt     gorm.DeletedAt `gorm:"index"`
+// }
 type Books struct {
-	ID          uint     `gorm:"primary_key"`
-	ISBN        string   `gorm:"type:varchar(13);not null"`
-	Publisher   []string `gorm:"type:varchar(100);not null"`
-	PublishDate string   `gorm:"type:varchar(100);not null"`
-	Title       string   `gorm:"type:varchar(100);not null"`
-	// Category	string `gorm:"type:varchar(100);not null"`
+	ID            uint   `gorm:"primary_key"`
+	BookId        string `gorm:"type:varchar(100);not null;unique"`
+	ISBN          string `gorm:"type:varchar(13);not null;unique"`
+	Publisher     string `gorm:"type:varchar(100);not null"`
+	PublishDate   string `gorm:"type:varchar(100);not null"`
+	Title         string `gorm:"type:varchar(100);not null"`
 	Description   string `gorm:"type:text;not null"`
+	Language      string `gorm:"type:varchar(100);not null"`
+	Picture       string `gorm:"type:text;not null"`
 	MinDeposit    uint   `gorm:"not null"`
 	NumberOfPages uint   `gorm:"type:int;not null"`
 	Status        bool   `gorm:"not null"`
@@ -31,31 +48,40 @@ func (u *Books) BeforeCreate(tx *gorm.DB) (err error) {
 
 func (u *Books) ToDomain() books.Domain {
 	return books.Domain{
-		Id:        u.ID,
-		ISBN:      u.ISBN,
-		Publisher: u.Publisher,
-		Title:     u.Title,
+		Id:          u.ID,
+		BookId:      u.BookId,
+		ISBN:        u.ISBN,
+		Publisher:   u.Publisher,
+		PublishDate: u.PublishDate,
+		Title:       u.Title,
 		// Category:    u.Category,
-		Description: u.Description,
-		MinDeposit:  u.MinDeposit,
-		Status:      u.Status,
-		CreatedAt:   u.CreatedAt,
-		UpdatedAt:   u.UpdatedAt,
+		Description:   u.Description,
+		Language:      u.Language,
+		Picture:       u.Picture,
+		NumberOfPages: u.NumberOfPages,
+		MinDeposit:    u.MinDeposit,
+		Status:        u.Status,
+		CreatedAt:     u.CreatedAt,
+		UpdatedAt:     u.UpdatedAt,
 	}
 }
 
 func FromDomain(domain books.Domain) Books {
 	return Books{
 		ID:        domain.Id,
+		BookId:    domain.BookId,
 		Publisher: domain.Publisher,
 		ISBN:      domain.ISBN,
 		Title:     domain.Title,
 		// Category:    domain.Category,
-		Description: domain.Description,
-		MinDeposit:  domain.MinDeposit,
-		Status:      domain.Status,
-		CreatedAt:   domain.CreatedAt,
-		UpdatedAt:   domain.UpdatedAt,
+		Description:   domain.Description,
+		Language:      domain.Language,
+		Picture:       domain.Picture,
+		MinDeposit:    domain.MinDeposit,
+		NumberOfPages: domain.NumberOfPages,
+		Status:        domain.Status,
+		CreatedAt:     domain.CreatedAt,
+		UpdatedAt:     domain.UpdatedAt,
 	}
 }
 

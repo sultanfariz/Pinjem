@@ -6,7 +6,6 @@ import (
 	"Pinjem/controllers"
 	"Pinjem/controllers/auth/responses"
 	"Pinjem/helpers"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -94,7 +93,6 @@ func (u *UserController) GetMyUserProfile(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	userId, err := helpers.ExtractJWTPayloadUserId(c)
-	log.Println(userId)
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
 	}

@@ -6,7 +6,7 @@ import (
 )
 
 type DepositResponse struct {
-	ID        uint
+	ID        uint      `json:"id"`
 	UserId    uint      `json:"user_id"`
 	Amount    uint      `json:"amount"`
 	CreatedAt time.Time `json:"createdAt"`

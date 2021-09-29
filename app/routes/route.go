@@ -21,7 +21,7 @@ type ControllerList struct {
 
 func (c ControllerList) InitRoutes(e *echo.Echo) {
 	v1 := e.Group("/api/v1")
-	// v1.Use(middleware.Recover())
+	v1.Use(middleware.Recover())
 	v1.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
 		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
@@ -62,8 +62,9 @@ func (c ControllerList) InitRoutes(e *echo.Echo) {
 
 	// deposit routes
 	deposits := v1.Group("/deposits")
-	deposits.GET("/:userId", c.DepositController.GetByUserId, jwt)
+	deposits.POST("/my", c.DepositController.Update, jwt)
 	deposits.Use(helpers.AdminRoleValidation)
+	deposits.GET("/:userId", c.DepositController.GetByUserId, jwt)
 	deposits.GET("", c.DepositController.GetAll, jwt)
 
 }

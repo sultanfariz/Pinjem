@@ -125,21 +125,17 @@ func UserRoleValidation(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
-// func ExtractJWT(c echo.Context) (*jwtClaim, error) {
 func ExtractJWTPayloadRole(c echo.Context) (string, error) {
 	header := c.Request().Header.Clone().Get("Authorization")
 	token := strings.Split(header, "Bearer ")[1]
 	claims, _ := sjwt.Parse(token)
-	// log.Println(claims)
-	// jwtClaim := struct {
-	// 	UserId string
-	// 	Role   string
-	// }{claims["user_id"].(string), claims["role"].(string)}
-	// jwtClaim := jwtClaim{
-	// 	UserId: userId,
-	// 	Role:   claims["role"].(string),
-	// }
-	// log.Println(jwtClaim)
-	// return &jwtClaim, nil
 	return claims["role"].(string), nil
+}
+
+func ExtractJWTPayloadUserId(c echo.Context) (float64, error) {
+	header := c.Request().Header.Clone().Get("Authorization")
+	token := strings.Split(header, "Bearer ")[1]
+	claims, _ := sjwt.Parse(token)
+	userId := claims["user_id"].(float64)
+	return userId, nil
 }

@@ -30,3 +30,10 @@ func (u *Usecase) GetByUserId(ctx context.Context, userId uint) (Domain, error) 
 
 	return u.Repo.GetByUserId(ctx, userId)
 }
+
+func (u *Usecase) Create(ctx context.Context, d Domain) (Domain, error) {
+	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
+	defer cancel()
+
+	return u.Repo.Create(ctx, d)
+}

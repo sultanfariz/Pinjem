@@ -2,17 +2,15 @@ package deposits
 
 import (
 	deposits "Pinjem/businesses/deposits"
-	"Pinjem/drivers/databases/users"
 	"time"
 
 	"gorm.io/gorm"
 )
 
 type Deposits struct {
-	ID        uint        `gorm:"primary_key"`
-	UserID    uint        `gorm:"column:user_id"`
-	User      users.Users `gorm:"foreignkey:UserID"`
-	Amount    uint        `gorm:"column:amount"`
+	ID        uint `gorm:"primary_key"`
+	UserID    uint `gorm:"not null; unique"`
+	Amount    uint `gorm:"not null"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`

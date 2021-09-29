@@ -21,7 +21,7 @@ type ControllerList struct {
 
 func (c ControllerList) InitRoutes(e *echo.Echo) {
 	v1 := e.Group("/api/v1")
-	v1.Use(middleware.Recover())
+	// v1.Use(middleware.Recover())
 	v1.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
 		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
@@ -35,11 +35,17 @@ func (c ControllerList) InitRoutes(e *echo.Echo) {
 
 	v1.Static("/uploads", "public")
 
-	// user routes
+	// auth routes
 	v1.POST("/register", c.AuthController.Register)
 	v1.POST("/login", c.AuthController.Login)
-	v1.GET("/users", c.UserController.GetAll, jwt)
-	v1.GET("/users/:userId", c.UserController.GetById)
+
+	// user routes
+	users := v1.Group("/users")
+	users.GET("/my", c.UserController.GetMyUserProfile, jwt)
+
+	users.Use(helpers.AdminRoleValidation)
+	users.GET("/all", c.UserController.GetAll, jwt)
+	users.GET("/:userId", c.UserController.GetById, jwt)
 
 	// book routes
 	// v1.GET("/books", c.BookController.GetAll)
@@ -56,6 +62,7 @@ func (c ControllerList) InitRoutes(e *echo.Echo) {
 
 	// deposit routes
 	deposits := v1.Group("/deposits")
+	deposits.GET("/:userId", c.DepositController.GetByUserId, jwt)
 	deposits.Use(helpers.AdminRoleValidation)
 	deposits.GET("", c.DepositController.GetAll, jwt)
 

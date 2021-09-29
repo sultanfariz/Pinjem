@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"Pinjem/businesses/deposits"
 	"Pinjem/businesses/users"
 	"Pinjem/controllers"
 	"Pinjem/controllers/auth/requests"
@@ -16,12 +17,14 @@ import (
 )
 
 type AuthController struct {
-	Usecase users.Usecase
+	Usecase        users.Usecase
+	DepositUsecase deposits.Usecase
 }
 
-func NewAuthController(u users.Usecase) *AuthController {
+func NewAuthController(u users.Usecase, d deposits.Usecase) *AuthController {
 	return &AuthController{
-		Usecase: u,
+		Usecase:        u,
+		DepositUsecase: d,
 	}
 }
 
@@ -95,6 +98,18 @@ func (a *AuthController) Register(c echo.Context) error {
 	}
 	if user.Id == 0 {
 		return controllers.ErrorResponse(c, http.StatusUnauthorized, exceptions.ErrInvalidCredentials)
+	}
+
+	// create deposit for user role
+	if userRegister.Role == "user" {
+		depositDomain := deposits.Domain{
+			UserId: user.Id,
+			Amount: 0,
+		}
+		_, err := a.DepositUsecase.Create(ctx, depositDomain)
+		if err != nil {
+			return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		}
 	}
 
 	registerResponse := responses.RegisterResponse{

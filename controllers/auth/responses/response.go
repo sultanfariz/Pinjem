@@ -25,6 +25,27 @@ type UserResponse struct {
 	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
+type MyProfileResponse struct {
+	ID            uint      `json:"id"`
+	Email         string    `json:"email"`
+	Fullname      string    `json:"fullname"`
+	NIK           string    `json:"nik"`
+	PhoneNumber   string    `json:"phoneNumber"`
+	Birthdate     string    `json:"birthdate"`
+	Address       string    `json:"address"`
+	Provinsi      string    `json:"provinsi"`
+	Kota          string    `json:"kota"`
+	Kecamatan     string    `json:"kecamatan"`
+	Desa          string    `json:"desa"`
+	PostalCode    string    `json:"postalCode"`
+	Role          string    `json:"role"`
+	LinkKTP       string    `json:"linkKTP"`
+	Status        int       `json:"status"`
+	DepositAmount uint      `json:"depositAmount"`
+	CreatedAt     time.Time `json:"createdAt"`
+	UpdatedAt     time.Time `json:"updatedAt"`
+}
+
 type LoginResponse struct {
 	Token string `json:"token"`
 }

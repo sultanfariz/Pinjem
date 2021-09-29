@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -62,9 +61,10 @@ func (b *BookController) GetAll(c echo.Context) error {
 func (u *BookController) GetById(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	bookIdParam := c.Param("bookId")
-	bookIdInt, _ := (strconv.Atoi(bookIdParam))
-	bookId := uint(bookIdInt)
+	bookId := c.Param("bookId")
+	// bookIdParam := c.Param("bookId")
+	// bookIdInt, _ := (strconv.Atoi(bookIdParam))
+	// bookId := uint(bookIdInt)
 	user, err := u.Usecase.GetById(ctx, bookId)
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)

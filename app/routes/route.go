@@ -19,7 +19,7 @@ type ControllerList struct {
 
 func (c ControllerList) InitRoutes(e *echo.Echo) {
 	v1 := e.Group("/api/v1")
-	// v1.Use(middleware.Recover())
+	v1.Use(middleware.Recover())
 	v1.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
 		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
@@ -41,10 +41,10 @@ func (c ControllerList) InitRoutes(e *echo.Echo) {
 
 	// book routes
 	// v1.GET("/books", c.BookController.GetAll)
-	books := v1.Group("/books")
-	books.GET("/", c.BookController.GetAll)
-	books.GET("/:bookId", c.BookController.GetById)
 	// books.Use(helpers.UserRoleValidation)
+	books := v1.Group("/books")
+	books.GET("/:bookId", c.BookController.GetById)
+	books.GET("/all", c.BookController.GetAll)
 	books.Use(helpers.AdminRoleValidation)
 	books.POST("", c.BookController.Create, jwt)
 	// books.POST("/books/:isbn", c.BookController.Create, jwt)

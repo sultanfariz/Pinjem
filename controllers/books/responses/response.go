@@ -21,7 +21,7 @@ import (
 // 	UpdatedAt     time.Time `json:"updatedAt"`
 // }
 type BookResponse struct {
-	ID     uint
+	ID     uint   `json:"id"`
 	BookId string `json:"bookId"`
 	// WorkId        string    `json:"workId"`
 	ISBN          string    `json:"isbn"`

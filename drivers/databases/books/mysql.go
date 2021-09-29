@@ -26,9 +26,9 @@ func (b *BookRepository) GetAll(ctx context.Context) ([]books.Domain, error) {
 	return result, nil
 }
 
-func (b *BookRepository) GetById(ctx context.Context, id uint) (books.Domain, error) {
+func (b *BookRepository) GetById(ctx context.Context, id string) (books.Domain, error) {
 	var book Books
-	if err := b.Conn.Where("id = ?", id).First(&book).Error; err != nil {
+	if err := b.Conn.Where("book_id = ?", id).First(&book).Error; err != nil {
 		return books.Domain{}, err
 	}
 	return book.ToDomain(), nil

@@ -3,6 +3,7 @@ package routes
 import (
 	"Pinjem/controllers/auth"
 	"Pinjem/controllers/books"
+	"Pinjem/controllers/deposits"
 	"Pinjem/controllers/users"
 	"Pinjem/helpers"
 	"os"
@@ -12,9 +13,10 @@ import (
 )
 
 type ControllerList struct {
-	AuthController *auth.AuthController
-	UserController *users.UserController
-	BookController *books.BookController
+	AuthController    *auth.AuthController
+	UserController    *users.UserController
+	BookController    *books.BookController
+	DepositController *deposits.DepositController
 }
 
 func (c ControllerList) InitRoutes(e *echo.Echo) {
@@ -51,4 +53,10 @@ func (c ControllerList) InitRoutes(e *echo.Echo) {
 	// books.POST("/books", c.BookController.Create, jwt, helpers.UserRoleValidation)
 	// books.POST("/books/:userId", c.BookController.Create)
 	// books.PUT("/books/:bookId", c.BookController.Update, jwt)
+
+	// deposit routes
+	deposits := v1.Group("/deposits")
+	deposits.Use(helpers.AdminRoleValidation)
+	deposits.GET("", c.DepositController.GetAll, jwt)
+
 }

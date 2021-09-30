@@ -48,23 +48,28 @@ func (c ControllerList) InitRoutes(e *echo.Echo) {
 	users.GET("/:userId", c.UserController.GetById, jwt)
 
 	// book routes
-	// v1.GET("/books", c.BookController.GetAll)
-	// books.Use(helpers.UserRoleValidation)
 	books := v1.Group("/books")
-	books.GET("/:bookId", c.BookController.GetById)
-	books.GET("/all", c.BookController.GetAll)
-	books.Use(helpers.AdminRoleValidation)
-	books.POST("", c.BookController.Create, jwt)
-	// books.POST("/books/:isbn", c.BookController.Create, jwt)
-	// books.POST("/books", c.BookController.Create, jwt, helpers.UserRoleValidation)
-	// books.POST("/books/:userId", c.BookController.Create)
-	// books.PUT("/books/:bookId", c.BookController.Update, jwt)
+	{
+		books.GET("/:bookId", c.BookController.GetById)
+		books.GET("/all", c.BookController.GetAll)
+	}
+	adminBooks := v1.Group("/books")
+	adminBooks.Use(helpers.AdminRoleValidation)
+	{
+		adminBooks.POST("", c.BookController.Create, jwt)
+	}
 
 	// deposit routes
-	deposits := v1.Group("/deposits")
-	deposits.POST("/my", c.DepositController.Update, jwt)
-	deposits.Use(helpers.AdminRoleValidation)
-	deposits.GET("/:userId", c.DepositController.GetByUserId, jwt)
-	deposits.GET("", c.DepositController.GetAll, jwt)
+	userDeposits := v1.Group("/deposits")
+	userDeposits.Use(helpers.UserRoleValidation)
+	{
+		userDeposits.POST("/my", c.DepositController.Update, jwt)
+	}
+	adminDeposits := v1.Group("/deposits")
+	adminDeposits.Use(helpers.AdminRoleValidation)
+	{
+		adminDeposits.GET("/:userId", c.DepositController.GetByUserId, jwt)
+		adminDeposits.GET("", c.DepositController.GetAll, jwt)
+	}
 
 }

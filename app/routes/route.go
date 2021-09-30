@@ -28,7 +28,6 @@ func (c ControllerList) InitRoutes(e *echo.Echo) {
 	}))
 
 	jwt := middleware.JWT([]byte(os.Getenv("JWT_SECRET")))
-	// userRoleValidation := helpers.UserRoleValidation(v1, v1)
 	v1.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: "${method} ${uri} ${status} ${time_rfc3339} ${latency_human}\n",
 	}))

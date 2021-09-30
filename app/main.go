@@ -13,7 +13,7 @@ import (
 	_bookDb "Pinjem/drivers/databases/books"
 	_depositDb "Pinjem/drivers/databases/deposits"
 	_userDb "Pinjem/drivers/databases/users"
-	postgres "Pinjem/drivers/postgresql"
+	mysql "Pinjem/drivers/mysql"
 	"log"
 	"os"
 	"strconv"
@@ -26,9 +26,11 @@ import (
 func main() {
 	e := echo.New()
 	config.LoadEnv()
+	// SET PATH=%PATH%;D:\xampp\mysql\bin
 
 	// connect to db
-	configDB := postgres.ConfigDB{
+	// configDB := postgres.ConfigDB{
+	configDB := mysql.ConfigDB{
 		Host:     os.Getenv("DB_HOST"),
 		Port:     os.Getenv("DB_PORT"),
 		User:     os.Getenv("DB_USER"),

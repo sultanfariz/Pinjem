@@ -1,3 +1,5 @@
 .env
 public
 mvc
+cli
+pinjem.pem

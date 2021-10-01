@@ -1,74 +1,58 @@
 package book_orders
 
 import (
-	"Pinjem/businesses/books"
+	bookOrders "Pinjem/businesses/book_orders"
 	"context"
 	"time"
 
 	"gorm.io/gorm"
 )
 
-type BookRepository struct {
+type BookOrderRepository struct {
 	Conn *gorm.DB
 }
 
-func NewBookRepository(conn *gorm.DB) books.DomainRepository {
-	return &BookRepository{Conn: conn}
+func NewBookOrderRepository(conn *gorm.DB) bookOrders.DomainRepository {
+	return &BookOrderRepository{Conn: conn}
 }
 
-func (b *BookRepository) GetAll(ctx context.Context) ([]books.Domain, error) {
-	var booksModel []Books
-	if err := b.Conn.Find(&booksModel).Error; err != nil {
+func (b *BookOrderRepository) GetAll(ctx context.Context) ([]bookOrders.Domain, error) {
+	var bookOrdersModel []BookOrders
+	if err := b.Conn.Find(&bookOrdersModel).Error; err != nil {
 		return nil, err
 	}
-	var result []books.Domain
-	result = ToListDomain(booksModel)
+	var result []bookOrders.Domain
+	result = ToListDomain(bookOrdersModel)
 	return result, nil
 }
 
-func (b *BookRepository) GetById(ctx context.Context, id string) (books.Domain, error) {
-	var book Books
+func (b *BookOrderRepository) GetById(ctx context.Context, id string) (bookOrders.Domain, error) {
+	var book BookOrders
 	if err := b.Conn.Where("book_id = ?", id).First(&book).Error; err != nil {
-		return books.Domain{}, err
+		return bookOrders.Domain{}, err
 	}
 	return book.ToDomain(), nil
 }
 
-func (b *BookRepository) GetByISBN(ctx context.Context, isbn string) (books.Domain, error) {
-	var book Books
-	if err := b.Conn.Where("isbn = ?", isbn).First(&book).Error; err != nil {
-		return books.Domain{}, err
-	}
-	return book.ToDomain(), nil
-}
-
-func (b *BookRepository) Create(ctx context.Context, book books.Domain) (books.Domain, error) {
-	createdBook := Books{
-		BookId:        book.BookId,
-		ISBN:          book.ISBN,
-		Title:         book.Title,
-		Publisher:     book.Publisher,
-		PublishDate:   book.PublishDate,
-		Description:   book.Description,
-		Language:      book.Language,
-		Picture:       book.Picture,
-		NumberOfPages: book.NumberOfPages,
-		MinDeposit:    book.MinDeposit,
-		Status:        book.Status,
+func (b *BookOrderRepository) Create(ctx context.Context, bookOrder bookOrders.Domain) (bookOrders.Domain, error) {
+	createdBookOrder := BookOrders{
+		OrderId:       bookOrder.OrderId,
+		BookId:        bookOrder.BookId,
+		DepositAmount: bookOrder.DepositAmount,
 		CreatedAt:     time.Now(),
 		UpdatedAt:     time.Now(),
 	}
-	insertErr := b.Conn.Create(&createdBook).Error
+	insertErr := b.Conn.Create(&createdBookOrder).Error
 	if insertErr != nil {
-		return books.Domain{}, insertErr
+		return bookOrders.Domain{}, insertErr
 	}
-	return createdBook.ToDomain(), nil
+	return createdBookOrder.ToDomain(), nil
 }
 
-// func (b *BookRepository) Update(user *User) error {
+// func (b *BookOrderRepository) Update(user *User) error {
 // 	return b.Conn.Save(user).Error
 // }
 
-// func (b *BookRepository) Delete(user *User) error {
+// func (b *BookOrderRepository) Delete(user *User) error {
 // 	return b.Conn.Delete(user).Error
 // }

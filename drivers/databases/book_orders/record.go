@@ -1,92 +1,52 @@
 package book_orders
 
 import (
-	"Pinjem/businesses/books"
+	bookOrders "Pinjem/businesses/book_orders"
 	"time"
 
 	"gorm.io/gorm"
 )
 
-// type Books struct {
-// 	ID          uint     `gorm:"primary_key"`
-// 	ISBN        string   `gorm:"type:varchar(13);not null"`
-// 	Publisher   []string `gorm:"type:varchar(100);not null"`
-// 	PublishDate string   `gorm:"type:varchar(100);not null"`
-// 	Title       string   `gorm:"type:varchar(100);not null"`
-// 	// Category	string `gorm:"type:varchar(100);not null"`
-// 	Description   string `gorm:"type:text;not null"`
-// 	MinDeposit    uint   `gorm:"not null"`
-// 	NumberOfPages uint   `gorm:"type:int;not null"`
-// 	Status        bool   `gorm:"not null"`
-// 	CreatedAt     time.Time
-// 	UpdatedAt     time.Time
-// 	DeletedAt     gorm.DeletedAt `gorm:"index"`
-// }
-type Books struct {
-	ID            uint   `gorm:"primary_key"`
-	BookId        string `gorm:"type:varchar(100);not null;unique"`
-	ISBN          string `gorm:"type:varchar(13);not null;unique"`
-	Publisher     string `gorm:"type:varchar(100);not null"`
-	PublishDate   string `gorm:"type:varchar(100);not null"`
-	Title         string `gorm:"type:varchar(100);not null"`
-	Description   string `gorm:"type:text;not null"`
-	Language      string `gorm:"type:varchar(100);not null"`
-	Picture       string `gorm:"type:text;not null"`
-	MinDeposit    uint   `gorm:"not null"`
-	NumberOfPages uint   `gorm:"type:int;not null"`
-	Status        bool   `gorm:"not null"`
+type BookOrders struct {
+	ID            uint `gorm:"primary_key"`
+	OrderId       uint `gorm:"column:order_id;not null"`
+	BookId        uint `gorm:"column:book_id;not null"`
+	DepositAmount uint `gorm:"column:deposit_amount;not null"`
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	DeletedAt     gorm.DeletedAt `gorm:"index"`
 }
 
-func (u *Books) BeforeCreate(tx *gorm.DB) (err error) {
-	u.CreatedAt = time.Now()
-	u.UpdatedAt = time.Now()
+func (b *BookOrders) BeforeCreate(tx *gorm.DB) (err error) {
+	b.CreatedAt = time.Now()
+	b.UpdatedAt = time.Now()
 	return
 }
 
-func (u *Books) ToDomain() books.Domain {
-	return books.Domain{
-		Id:          u.ID,
-		BookId:      u.BookId,
-		ISBN:        u.ISBN,
-		Publisher:   u.Publisher,
-		PublishDate: u.PublishDate,
-		Title:       u.Title,
-		// Category:    u.Category,
-		Description:   u.Description,
-		Language:      u.Language,
-		Picture:       u.Picture,
-		NumberOfPages: u.NumberOfPages,
-		MinDeposit:    u.MinDeposit,
-		Status:        u.Status,
-		CreatedAt:     u.CreatedAt,
-		UpdatedAt:     u.UpdatedAt,
+func (b *BookOrders) ToDomain() bookOrders.Domain {
+	return bookOrders.Domain{
+		Id:            b.ID,
+		OrderId:       b.OrderId,
+		BookId:        b.BookId,
+		DepositAmount: b.DepositAmount,
+		CreatedAt:     b.CreatedAt,
+		UpdatedAt:     b.UpdatedAt,
 	}
 }
 
-func FromDomain(domain books.Domain) Books {
-	return Books{
-		ID:        domain.Id,
-		BookId:    domain.BookId,
-		Publisher: domain.Publisher,
-		ISBN:      domain.ISBN,
-		Title:     domain.Title,
-		// Category:    domain.Category,
-		Description:   domain.Description,
-		Language:      domain.Language,
-		Picture:       domain.Picture,
-		MinDeposit:    domain.MinDeposit,
-		NumberOfPages: domain.NumberOfPages,
-		Status:        domain.Status,
+func FromDomain(domain bookOrders.Domain) BookOrders {
+	return BookOrders{
+		ID:            domain.Id,
+		OrderId:       domain.OrderId,
+		BookId:        domain.BookId,
+		DepositAmount: domain.DepositAmount,
 		CreatedAt:     domain.CreatedAt,
 		UpdatedAt:     domain.UpdatedAt,
 	}
 }
 
-func ToListDomain(data []Books) []books.Domain {
-	var listDomain []books.Domain
+func ToListDomain(data []BookOrders) []bookOrders.Domain {
+	var listDomain []bookOrders.Domain
 	for _, d := range data {
 		listDomain = append(listDomain, d.ToDomain())
 	}

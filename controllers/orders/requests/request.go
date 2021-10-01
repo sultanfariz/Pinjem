@@ -38,5 +38,6 @@ type KeyStruct struct {
 // }
 
 type CreateOrder struct {
-	books []string `json:"books"`
+	// Books []string `json:"books"`
+	Books []int `json:"books"`
 }

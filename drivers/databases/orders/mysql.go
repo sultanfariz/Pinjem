@@ -34,14 +34,6 @@ func (b *OrderRepository) GetById(ctx context.Context, id string) (orders.Domain
 	return order.ToDomain(), nil
 }
 
-func (b *OrderRepository) GetByISBN(ctx context.Context, isbn string) (orders.Domain, error) {
-	var order Orders
-	if err := b.Conn.Where("isbn = ?", isbn).First(&order).Error; err != nil {
-		return orders.Domain{}, err
-	}
-	return order.ToDomain(), nil
-}
-
 func (b *OrderRepository) Create(ctx context.Context, order orders.Domain) (orders.Domain, error) {
 	createdOrder := Orders{
 		UserId: order.UserId,

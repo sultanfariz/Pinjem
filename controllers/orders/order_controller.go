@@ -1,6 +1,7 @@
 package orders
 
 import (
+	bookOrders "Pinjem/businesses/book_orders"
 	"Pinjem/businesses/orders"
 	"Pinjem/controllers"
 	"Pinjem/controllers/orders/requests"
@@ -13,23 +14,21 @@ import (
 )
 
 type OrderController struct {
-	Usecase orders.Usecase
+	Usecase          orders.Usecase
+	BookOrderUsecase bookOrders.Usecase
 }
 
-type Header struct {
-	Cookie string `json:"cookie"`
-}
-
-func NewOrderController(u orders.Usecase) *OrderController {
+func NewOrderController(u orders.Usecase, b bookOrders.Usecase) *OrderController {
 	return &OrderController{
-		Usecase: u,
+		Usecase:          u,
+		BookOrderUsecase: b,
 	}
 }
 
-func (b *OrderController) GetAll(c echo.Context) error {
+func (o *OrderController) GetAll(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	orders, err := b.Usecase.GetAll(ctx)
+	orders, err := o.Usecase.GetAll(ctx)
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
 	}
@@ -49,14 +48,14 @@ func (b *OrderController) GetAll(c echo.Context) error {
 	return controllers.SuccessResponse(c, response)
 }
 
-func (u *OrderController) GetById(c echo.Context) error {
+func (o *OrderController) GetById(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	orderId := c.Param("orderId")
 	// orderIdParam := c.Param("orderId")
 	// orderIdInt, _ := (strconv.Atoi(orderIdParam))
 	// orderId := uint(orderIdInt)
-	user, err := u.Usecase.GetById(ctx, orderId)
+	user, err := o.Usecase.GetById(ctx, orderId)
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
 	}
@@ -74,39 +73,55 @@ func (u *OrderController) GetById(c echo.Context) error {
 	return controllers.SuccessResponse(c, response)
 }
 
-func (b *OrderController) Create(c echo.Context) error {
-	ctx := c.Request().Context()
+func (o *OrderController) Create(c echo.Context) error {
+	// ctx := c.Request().Context()
 
+	log.Println("---------------------------------")
+	books := c.FormValue("books")
+	log.Println(books)
 	createdOrder := requests.CreateOrder{}
 	c.Bind(&createdOrder)
+	log.Println(createdOrder)
+	log.Println(createdOrder.Books)
 
+	// get user id from token
 	userId, err := helpers.ExtractJWTPayloadUserId(c)
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
 	}
-
 	id := uint(userId)
 
 	orderDomain := orders.Domain{
 		UserId: id,
 		Status: true,
 	}
+	log.Println(createdOrder)
 	log.Println(orderDomain)
 
-	order, err := b.Usecase.Create(ctx, orderDomain)
-	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
-	}
+	// input order to db
+	// order, err := o.Usecase.Create(ctx, orderDomain)
+	// if err != nil {
+	// 	return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+	// }
+
+	// for _, bookId := range createdOrder.books {
+	// 	bookOrderDomain := bookOrders.Domain{
+	// 		OrderId: order.Id,
+	// 		BookId:  bookId,
+	// 	}
+	// 	log.Println(bookOrderDomain)
+	// }
 
 	OrderResponse := responses.OrderResponse{
-		ID:        order.Id,
-		UserId:    order.UserId,
-		OrderDate: order.OrderDate,
-		ExpDate:   order.ExpDate,
-		Status:    order.Status,
-		CreatedAt: order.CreatedAt,
-		UpdatedAt: order.UpdatedAt,
+		// ID:        order.Id,
+		// UserId:    order.UserId,
+		// OrderDate: order.OrderDate,
+		// ExpDate:   order.ExpDate,
+		// Status:    order.Status,
+		// CreatedAt: order.CreatedAt,
+		// UpdatedAt: order.UpdatedAt,
 	}
 
+	// return controllers.SuccessResponse(c, OrderResponse)
 	return controllers.SuccessResponse(c, OrderResponse)
 }

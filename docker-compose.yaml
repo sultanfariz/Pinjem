@@ -1,0 +1,41 @@
+version: "3.9"
+services:
+  # MySQL
+  db:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "pinjem"
+      MYSQL_USER: "root"
+      MYSQL_PASSWORD: ""
+    volumes:
+      - database_mysql:/var/lib/mysql
+    networks:
+      - pinjem
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "9191:8080"
+
+  app:
+    container_name: api_pinjem
+    build: .
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./:/usr/src/app
+
+volumes:
+  database_mysql:
+  api:
+
+networks:
+  pinjem:
+    driver: bridge

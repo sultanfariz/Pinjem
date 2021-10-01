@@ -1,0 +1,69 @@
+name: "unit test golang"
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    branches:
+      - "main"
+jobs:
+  test:
+    name: "do unit test to project"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "run unit tests"
+      - uses: actions/checkout@v2
+        uses: actions/go-test@v2
+        with:
+          env:
+            - name: "GITHUB_TOKEN"
+              value: "${{ secrets.GITHUB_TOKEN }}"
+          go-test-args:
+            - -v
+            - -run
+            - Test*
+            - -count=1
+            - -
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: "build"
+        uses: actions/go-build@v2
+        with:
+          env:
+            - name: "GITHUB_TOKEN"
+              value: "${{ secrets.GITHUB_TOKEN }}"
+          go-build-args:
+            - -v
+            - -a
+            - -o
+            - /tmp/golang-test
+            - -ldflags
+            - -X
+            - github.com/kubeflow/test-infra/bootstrap/test_runner.gitSHA=$(git rev-parse HEAD)
+            - -X
+            - github.com/kubeflow/test-infra/bootstrap/test_runner.gitBranch=$(git rev-parse --abbrev-ref HEAD)
+            - -X
+            - github.com/kubeflow/test-infra/bootstrap/test_runner.gitTag=$(git describe --tags)
+            - -X
+            - github.com/kubeflow/test-infra/bootstrap/test_runner.gitTreeState=$(git status --porcelain)
+            - -X
+            - github.com/kubeflow/test-infra/bootstrap/test_runner.gitRemoteOrigin=$(git remote -v | grep origin | head -n1 | awk '{print $2}')
+            - -X
+            - github.com/kubeflow/test-infra/bootstrap/test_runner.gitRemoteBranch=$(git rev-parse --abbrev-ref HEAD)
+            - -X
+            - github.com/kubeflow/test-infra/bootstrap/test_runner.gitRemoteURL=$(git remote -v | grep origin | head -n1 | awk '{print $2}')
+            
+          go-build-output:
+            path: /tmp/golang-test
+            name: golang-test
+            path-strategy: replace
+          go-build-tags:
+            - "test"
+            - "unit"
+            - "integration"
+            - "e2e"
+      
+

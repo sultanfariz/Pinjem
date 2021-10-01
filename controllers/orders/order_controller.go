@@ -38,11 +38,62 @@ func (o *OrderController) GetAll(c echo.Context) error {
 
 	response := make([]responses.OrderResponse, len(orders))
 	for i, order := range orders {
+		books, err := o.BookOrderUsecase.GetByOrderId(ctx, order.Id)
+		if err != nil {
+			return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		}
+
+		var bookIds []string
+		for _, book := range books {
+			bookIds = append(bookIds, book.BookId)
+		}
+
 		response[i] = responses.OrderResponse{
 			ID:        order.Id,
 			UserId:    order.UserId,
 			OrderDate: order.OrderDate,
 			ExpDate:   order.ExpDate,
+			BookId:    bookIds,
+			Status:    order.Status,
+			CreatedAt: order.CreatedAt,
+			UpdatedAt: order.UpdatedAt,
+		}
+	}
+	return controllers.SuccessResponse(c, response)
+}
+
+func (o *OrderController) GetMyOrders(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	userId, err := helpers.ExtractJWTPayloadUserId(c)
+	if err != nil {
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+	}
+	id := uint(userId)
+
+	orders, err := o.Usecase.GetMyOrders(ctx, id)
+	if err != nil {
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+	}
+
+	response := make([]responses.OrderResponse, len(orders))
+	for i, order := range orders {
+		books, err := o.BookOrderUsecase.GetByOrderId(ctx, order.Id)
+		if err != nil {
+			return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		}
+
+		var bookIds []string
+		for _, book := range books {
+			bookIds = append(bookIds, book.BookId)
+		}
+
+		response[i] = responses.OrderResponse{
+			ID:        order.Id,
+			UserId:    order.UserId,
+			OrderDate: order.OrderDate,
+			ExpDate:   order.ExpDate,
+			BookId:    bookIds,
 			Status:    order.Status,
 			CreatedAt: order.CreatedAt,
 			UpdatedAt: order.UpdatedAt,

@@ -26,6 +26,16 @@ func (b *OrderRepository) GetAll(ctx context.Context) ([]orders.Domain, error) {
 	return result, nil
 }
 
+func (b *OrderRepository) GetMyOrders(ctx context.Context, userId uint) ([]orders.Domain, error) {
+	var ordersModel []Orders
+	if err := b.Conn.Where("user_id = ?", userId).Find(&ordersModel).Error; err != nil {
+		return nil, err
+	}
+	var result []orders.Domain
+	result = ToListDomain(ordersModel)
+	return result, nil
+}
+
 func (b *OrderRepository) GetById(ctx context.Context, id uint) (orders.Domain, error) {
 	var order Orders
 	if err := b.Conn.Where("id = ?", id).First(&order).Error; err != nil {

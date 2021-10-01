@@ -67,6 +67,7 @@ func (c ControllerList) InitRoutes(e *echo.Echo) {
 
 		// // order routes
 		admins.GET("/orders", c.OrderController.GetAll, jwt)
+		admins.GET("/orders/my", c.OrderController.GetMyOrders, jwt)
 		admins.GET("/orders/:orderId", c.OrderController.GetById, jwt)
 		// // admins.GET("/:userId", c.OrderController.GetByUserId, jwt)
 	}
@@ -83,7 +84,7 @@ func (c ControllerList) InitRoutes(e *echo.Echo) {
 
 		// order routes
 		users.POST("/orders", c.OrderController.Create, jwt)
-		// users.GET("/my", c.OrderController.GetMyOrders, jwt)
+		users.GET("/orders/my", c.OrderController.GetMyOrders, jwt)
 	}
 
 	// // user routes

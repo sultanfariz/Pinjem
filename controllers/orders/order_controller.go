@@ -2,26 +2,29 @@ package orders
 
 import (
 	bookOrders "Pinjem/businesses/book_orders"
+	"Pinjem/businesses/books"
 	"Pinjem/businesses/orders"
 	"Pinjem/controllers"
 	"Pinjem/controllers/orders/requests"
 	"Pinjem/controllers/orders/responses"
 	"Pinjem/helpers"
-	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
 
 type OrderController struct {
 	Usecase          orders.Usecase
+	BookUsecase      books.Usecase
 	BookOrderUsecase bookOrders.Usecase
 }
 
-func NewOrderController(u orders.Usecase, b bookOrders.Usecase) *OrderController {
+func NewOrderController(u orders.Usecase, bo bookOrders.Usecase, b books.Usecase) *OrderController {
 	return &OrderController{
 		Usecase:          u,
-		BookOrderUsecase: b,
+		BookOrderUsecase: bo,
+		BookUsecase:      b,
 	}
 }
 
@@ -51,13 +54,22 @@ func (o *OrderController) GetAll(c echo.Context) error {
 func (o *OrderController) GetById(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	orderId := c.Param("orderId")
-	// orderIdParam := c.Param("orderId")
-	// orderIdInt, _ := (strconv.Atoi(orderIdParam))
-	// orderId := uint(orderIdInt)
+	orderIdParam := c.Param("orderId")
+	orderIdInt, _ := (strconv.Atoi(orderIdParam))
+	orderId := uint(orderIdInt)
 	user, err := o.Usecase.GetById(ctx, orderId)
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+	}
+
+	books, err := o.BookOrderUsecase.GetByOrderId(ctx, orderId)
+	if err != nil {
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+	}
+
+	var bookIds []string
+	for _, book := range books {
+		bookIds = append(bookIds, book.BookId)
 	}
 
 	response := responses.OrderResponse{
@@ -65,6 +77,7 @@ func (o *OrderController) GetById(c echo.Context) error {
 		UserId:    user.UserId,
 		OrderDate: user.OrderDate,
 		ExpDate:   user.ExpDate,
+		BookId:    bookIds,
 		Status:    user.Status,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
@@ -74,15 +87,10 @@ func (o *OrderController) GetById(c echo.Context) error {
 }
 
 func (o *OrderController) Create(c echo.Context) error {
-	// ctx := c.Request().Context()
+	ctx := c.Request().Context()
 
-	log.Println("---------------------------------")
-	books := c.FormValue("books")
-	log.Println(books)
 	createdOrder := requests.CreateOrder{}
 	c.Bind(&createdOrder)
-	log.Println(createdOrder)
-	log.Println(createdOrder.Books)
 
 	// get user id from token
 	userId, err := helpers.ExtractJWTPayloadUserId(c)
@@ -95,33 +103,46 @@ func (o *OrderController) Create(c echo.Context) error {
 		UserId: id,
 		Status: true,
 	}
-	log.Println(createdOrder)
-	log.Println(orderDomain)
 
 	// input order to db
-	// order, err := o.Usecase.Create(ctx, orderDomain)
-	// if err != nil {
-	// 	return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
-	// }
-
-	// for _, bookId := range createdOrder.books {
-	// 	bookOrderDomain := bookOrders.Domain{
-	// 		OrderId: order.Id,
-	// 		BookId:  bookId,
-	// 	}
-	// 	log.Println(bookOrderDomain)
-	// }
-
-	OrderResponse := responses.OrderResponse{
-		// ID:        order.Id,
-		// UserId:    order.UserId,
-		// OrderDate: order.OrderDate,
-		// ExpDate:   order.ExpDate,
-		// Status:    order.Status,
-		// CreatedAt: order.CreatedAt,
-		// UpdatedAt: order.UpdatedAt,
+	order, err := o.Usecase.Create(ctx, orderDomain)
+	if err != nil {
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
 	}
 
-	// return controllers.SuccessResponse(c, OrderResponse)
+	// input book order to db
+	for _, bookId := range createdOrder.Books {
+		book, err := o.BookUsecase.GetById(ctx, bookId)
+		if book.Id == 0 {
+			return controllers.ErrorResponse(c, http.StatusBadRequest, err)
+		}
+		if err != nil {
+			return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		}
+		bookOrderDomain := bookOrders.Domain{
+			OrderId:       order.Id,
+			BookId:        bookId,
+			DepositAmount: book.MinDeposit,
+		}
+		bookOrder, err := o.BookOrderUsecase.Create(ctx, bookOrderDomain)
+		if bookOrder.Id == 0 {
+			return controllers.ErrorResponse(c, http.StatusBadRequest, err)
+		}
+		if err != nil {
+			return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		}
+	}
+
+	OrderResponse := responses.OrderResponse{
+		ID:        order.Id,
+		UserId:    order.UserId,
+		OrderDate: order.OrderDate,
+		ExpDate:   order.ExpDate,
+		BookId:    createdOrder.Books,
+		Status:    order.Status,
+		CreatedAt: order.CreatedAt,
+		UpdatedAt: order.UpdatedAt,
+	}
+
 	return controllers.SuccessResponse(c, OrderResponse)
 }

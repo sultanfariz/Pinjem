@@ -45,7 +45,7 @@ func main() {
 		Database: os.Getenv("DB_DATABASE"),
 	}
 	Conn := configDB.InitDB()
-	Conn.Debug().AutoMigrate(&_userDb.Users{}, &_bookDb.Books{}, &_depositDb.Deposits{})
+	Conn.Debug().AutoMigrate(&_userDb.Users{}, &_bookDb.Books{}, &_depositDb.Deposits{}, &_orderDb.Orders{}, &_bookOrderDb.BookOrders{})
 
 	timeoutContextEnv, _ := strconv.Atoi(os.Getenv("TIMEOUT_CONTEXT"))
 	timeoutContext := time.Duration(timeoutContextEnv) * time.Second
@@ -59,7 +59,7 @@ func main() {
 	userController := _userController.NewUserController(*userUsecase, *depositUseCase)
 	bookController := _bookController.NewBookController(*bookUseCase)
 	depositController := _depositController.NewDepositController(*depositUseCase)
-	orderController := _orderController.NewOrderController(*orderUseCase, *bookOrderUseCase)
+	orderController := _orderController.NewOrderController(*orderUseCase, *bookOrderUseCase, *bookUseCase)
 	bookOrderController := _bookOrderController.NewBookOrderController(*bookOrderUseCase)
 
 	// Routes

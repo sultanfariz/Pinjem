@@ -8,10 +8,10 @@ import (
 )
 
 type BookOrders struct {
-	ID            uint `gorm:"primary_key"`
-	OrderId       uint `gorm:"column:order_id;not null"`
-	BookId        uint `gorm:"column:book_id;not null"`
-	DepositAmount uint `gorm:"column:deposit_amount;not null"`
+	ID            uint   `gorm:"primary_key"`
+	OrderId       uint   `gorm:"column:order_id;not null"`
+	BookId        string `gorm:"column:book_id;not null"`
+	DepositAmount uint   `gorm:"column:deposit_amount;not null"`
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	DeletedAt     gorm.DeletedAt `gorm:"index"`

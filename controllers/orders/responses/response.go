@@ -10,6 +10,7 @@ type OrderResponse struct {
 	UserId    uint      `json:"user_id"`
 	OrderDate time.Time `json:"order_date"`
 	ExpDate   time.Time `json:"exp_date"`
+	BookId    []string  `json:"book_id"`
 	Status    bool      `json:"status"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`

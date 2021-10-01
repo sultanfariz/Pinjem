@@ -8,7 +8,7 @@ import (
 type BookOrderResponse struct {
 	ID            uint      `json:"id"`
 	OrderId       uint      `json:"order_id"`
-	BookId        uint      `json:"book_id"`
+	BookId        string    `json:"book_id"`
 	DepositAmount uint      `json:"deposit_amount"`
 	CreatedAt     time.Time `json:"createdAt"`
 	UpdatedAt     time.Time `json:"updatedAt"`

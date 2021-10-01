@@ -66,8 +66,8 @@ func (c ControllerList) InitRoutes(e *echo.Echo) {
 		admins.GET("/deposits", c.DepositController.GetAll, jwt)
 
 		// // order routes
-		// admins.GET("/orders", c.OrderController.GetAll, jwt)
-		// admins.GET("/orders/:orderId", c.OrderController.GetById, jwt)
+		admins.GET("/orders", c.OrderController.GetAll, jwt)
+		admins.GET("/orders/:orderId", c.OrderController.GetById, jwt)
 		// // admins.GET("/:userId", c.OrderController.GetByUserId, jwt)
 	}
 

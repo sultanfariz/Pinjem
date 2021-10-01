@@ -34,6 +34,16 @@ func (b *BookOrderRepository) GetById(ctx context.Context, id string) (bookOrder
 	return book.ToDomain(), nil
 }
 
+func (b *BookOrderRepository) GetByOrderId(ctx context.Context, id uint) ([]bookOrders.Domain, error) {
+	var bookOrdersModel []BookOrders
+	if err := b.Conn.Where("order_id = ?", id).Find(&bookOrdersModel).Error; err != nil {
+		return []bookOrders.Domain{}, err
+	}
+	var result []bookOrders.Domain
+	result = ToListDomain(bookOrdersModel)
+	return result, nil
+}
+
 func (b *BookOrderRepository) Create(ctx context.Context, bookOrder bookOrders.Domain) (bookOrders.Domain, error) {
 	createdBookOrder := BookOrders{
 		OrderId:       bookOrder.OrderId,

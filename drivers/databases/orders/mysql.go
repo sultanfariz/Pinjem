@@ -59,6 +59,14 @@ func (b *OrderRepository) Create(ctx context.Context, order orders.Domain) (orde
 	return createdOrder.ToDomain(), nil
 }
 
+func (b *OrderRepository) Delete(ctx context.Context, id uint) error {
+	var order Orders
+	if err := b.Conn.Where("id = ?", id).Delete(&order).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 // func (b *OrderRepository) Update(user *User) error {
 // 	return b.Conn.Save(user).Error
 // }

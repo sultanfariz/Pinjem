@@ -3,10 +3,12 @@ package orders
 import (
 	bookOrders "Pinjem/businesses/book_orders"
 	"Pinjem/businesses/books"
+	"Pinjem/businesses/deposits"
 	"Pinjem/businesses/orders"
 	"Pinjem/controllers"
 	"Pinjem/controllers/orders/requests"
 	"Pinjem/controllers/orders/responses"
+	"Pinjem/exceptions"
 	"Pinjem/helpers"
 	"net/http"
 	"strconv"
@@ -18,13 +20,15 @@ type OrderController struct {
 	Usecase          orders.Usecase
 	BookUsecase      books.Usecase
 	BookOrderUsecase bookOrders.Usecase
+	DepositUsecase   deposits.Usecase
 }
 
-func NewOrderController(u orders.Usecase, bo bookOrders.Usecase, b books.Usecase) *OrderController {
+func NewOrderController(u orders.Usecase, bo bookOrders.Usecase, b books.Usecase, d deposits.Usecase) *OrderController {
 	return &OrderController{
 		Usecase:          u,
 		BookOrderUsecase: bo,
 		BookUsecase:      b,
+		DepositUsecase:   d,
 	}
 }
 
@@ -163,16 +167,16 @@ func (o *OrderController) Create(c echo.Context) error {
 
 	// input book order to db
 	var totalDeposit uint
+	var bookOrderDomainArr []bookOrders.Domain
 	for _, bookId := range createdOrder.Books {
 		// check if book available and get book price
 		book, err := o.BookUsecase.GetById(ctx, bookId)
-		if book.Id == 0 {
-			return controllers.ErrorResponse(c, http.StatusBadRequest, err)
-		}
-		if !book.Status {
-			return controllers.ErrorResponse(c, http.StatusBadRequest, err)
+		if book.Id == 0 || !book.Status {
+			err = o.Usecase.Delete(ctx, order.Id)
+			return controllers.ErrorResponse(c, http.StatusBadRequest, exceptions.ErrBookNotFound)
 		}
 		if err != nil {
+			err = o.Usecase.Delete(ctx, order.Id)
 			return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
 		}
 
@@ -182,6 +186,21 @@ func (o *OrderController) Create(c echo.Context) error {
 			BookId:        bookId,
 			DepositAmount: book.MinDeposit,
 		}
+		bookOrderDomainArr = append(bookOrderDomainArr, bookOrderDomain)
+		totalDeposit += bookOrderDomain.DepositAmount
+	}
+
+	// check if total deposit amount is enough
+	deposit, err := o.DepositUsecase.GetByUserId(ctx, id)
+	if err != nil {
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+	}
+	if deposit.Amount < totalDeposit {
+		_ = o.Usecase.Delete(ctx, order.Id)
+		return controllers.ErrorResponse(c, http.StatusBadRequest, exceptions.ErrInsufficientBalance)
+	}
+
+	for _, bookOrderDomain := range bookOrderDomainArr {
 		bookOrder, err := o.BookOrderUsecase.Create(ctx, bookOrderDomain)
 		if bookOrder.Id == 0 {
 			return controllers.ErrorResponse(c, http.StatusBadRequest, err)
@@ -191,12 +210,16 @@ func (o *OrderController) Create(c echo.Context) error {
 		}
 
 		// update book status
-		_, err = o.BookUsecase.UpdateStatus(ctx, bookId, false)
+		_, err = o.BookUsecase.UpdateStatus(ctx, bookOrderDomain.BookId, false)
 		if err != nil {
 			return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
 		}
+	}
 
-		totalDeposit += bookOrder.DepositAmount
+	// update deposit amount
+	_, err = o.DepositUsecase.Update(ctx, id, deposit.Amount-totalDeposit)
+	if err != nil {
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
 	}
 
 	OrderResponse := responses.OrderResponse{

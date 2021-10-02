@@ -44,3 +44,10 @@ func (u *Usecase) Create(ctx context.Context, domain Domain) (Domain, error) {
 
 	return u.Repo.Create(ctx, domain)
 }
+
+func (u *Usecase) Delete(ctx context.Context, id uint) error {
+	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
+	defer cancel()
+
+	return u.Repo.Delete(ctx, id)
+}

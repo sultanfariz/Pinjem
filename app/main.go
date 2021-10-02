@@ -59,7 +59,7 @@ func main() {
 	userController := _userController.NewUserController(*userUsecase, *depositUseCase)
 	bookController := _bookController.NewBookController(*bookUseCase)
 	depositController := _depositController.NewDepositController(*depositUseCase)
-	orderController := _orderController.NewOrderController(*orderUseCase, *bookOrderUseCase, *bookUseCase)
+	orderController := _orderController.NewOrderController(*orderUseCase, *bookOrderUseCase, *bookUseCase, *depositUseCase)
 	bookOrderController := _bookOrderController.NewBookOrderController(*bookOrderUseCase)
 
 	// Routes

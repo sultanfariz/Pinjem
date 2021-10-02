@@ -59,6 +59,14 @@ func (b *BookOrderRepository) Create(ctx context.Context, bookOrder bookOrders.D
 	return createdBookOrder.ToDomain(), nil
 }
 
+func (b *BookOrderRepository) Delete(ctx context.Context, id string) error {
+	var book BookOrders
+	if err := b.Conn.Where("book_id = ?", id).First(&book).Error; err != nil {
+		return err
+	}
+	return b.Conn.Delete(&book).Error
+}
+
 // func (b *BookOrderRepository) Update(user *User) error {
 // 	return b.Conn.Save(user).Error
 // }

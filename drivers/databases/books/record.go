@@ -40,29 +40,29 @@ type Books struct {
 	DeletedAt     gorm.DeletedAt `gorm:"index"`
 }
 
-func (u *Books) BeforeCreate(tx *gorm.DB) (err error) {
-	u.CreatedAt = time.Now()
-	u.UpdatedAt = time.Now()
+func (b *Books) BeforeCreate() (err error) {
+	b.CreatedAt = time.Now()
+	b.UpdatedAt = time.Now()
 	return
 }
 
-func (u *Books) ToDomain() books.Domain {
+func (b *Books) ToDomain() books.Domain {
 	return books.Domain{
-		Id:          u.ID,
-		BookId:      u.BookId,
-		ISBN:        u.ISBN,
-		Publisher:   u.Publisher,
-		PublishDate: u.PublishDate,
-		Title:       u.Title,
-		// Category:    u.Category,
-		Description:   u.Description,
-		Language:      u.Language,
-		Picture:       u.Picture,
-		NumberOfPages: u.NumberOfPages,
-		MinDeposit:    u.MinDeposit,
-		Status:        u.Status,
-		CreatedAt:     u.CreatedAt,
-		UpdatedAt:     u.UpdatedAt,
+		Id:          b.ID,
+		BookId:      b.BookId,
+		ISBN:        b.ISBN,
+		Publisher:   b.Publisher,
+		PublishDate: b.PublishDate,
+		Title:       b.Title,
+		// Category:    b.Category,
+		Description:   b.Description,
+		Language:      b.Language,
+		Picture:       b.Picture,
+		NumberOfPages: b.NumberOfPages,
+		MinDeposit:    b.MinDeposit,
+		Status:        b.Status,
+		CreatedAt:     b.CreatedAt,
+		UpdatedAt:     b.UpdatedAt,
 	}
 }
 

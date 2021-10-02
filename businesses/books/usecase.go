@@ -44,3 +44,10 @@ func (u *Usecase) Create(ctx context.Context, domain Domain) (Domain, error) {
 
 	return u.Repo.Create(ctx, domain)
 }
+
+func (u *Usecase) UpdateStatus(ctx context.Context, bookId string, status bool) (Domain, error) {
+	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
+	defer cancel()
+
+	return u.Repo.UpdateStatus(ctx, bookId, status)
+}

@@ -71,7 +71,7 @@ func (o *OrderController) GetMyOrders(c echo.Context) error {
 	}
 	id := uint(userId)
 
-	orders, err := o.Usecase.GetMyOrders(ctx, id)
+	orders, err := o.Usecase.GetOrdersByUserId(ctx, id)
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
 	}
@@ -162,14 +162,21 @@ func (o *OrderController) Create(c echo.Context) error {
 	}
 
 	// input book order to db
+	var totalDeposit uint
 	for _, bookId := range createdOrder.Books {
+		// check if book available and get book price
 		book, err := o.BookUsecase.GetById(ctx, bookId)
 		if book.Id == 0 {
+			return controllers.ErrorResponse(c, http.StatusBadRequest, err)
+		}
+		if !book.Status {
 			return controllers.ErrorResponse(c, http.StatusBadRequest, err)
 		}
 		if err != nil {
 			return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
 		}
+
+		// insert to book order db
 		bookOrderDomain := bookOrders.Domain{
 			OrderId:       order.Id,
 			BookId:        bookId,
@@ -182,6 +189,14 @@ func (o *OrderController) Create(c echo.Context) error {
 		if err != nil {
 			return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
 		}
+
+		// update book status
+		_, err = o.BookUsecase.UpdateStatus(ctx, bookId, false)
+		if err != nil {
+			return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		}
+
+		totalDeposit += bookOrder.DepositAmount
 	}
 
 	OrderResponse := responses.OrderResponse{

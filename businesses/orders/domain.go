@@ -6,19 +6,21 @@ import (
 )
 
 type Domain struct {
-	Id            uint
-	UserId        uint
-	OrderDate     time.Time
-	ExpDate       time.Time
-	Status        bool
-	DestProvinsi  string
-	DestKota      string
-	DestKecamatan string
-	DestDesa      string
-	DestAddress   string
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
-	DeletedAt     time.Time
+	Id             uint
+	UserId         uint
+	OrderDate      time.Time
+	ExpDate        time.Time
+	Status         bool
+	DestProvinsi   string
+	DestKota       string
+	DestKecamatan  string
+	DestDesa       string
+	DestAddress    string
+	DestPostalCode string
+	ShippingCost   uint
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	DeletedAt      time.Time
 }
 
 type DomainRepository interface {

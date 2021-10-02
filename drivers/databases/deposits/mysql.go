@@ -48,12 +48,13 @@ func (d *DepositRepository) Create(ctx context.Context, deposit deposits.Domain)
 	return createdDeposit.ToDomain(), nil
 }
 
-func (d *DepositRepository) Update(ctx context.Context, userId uint, amount uint) (deposits.Domain, error) {
+func (d *DepositRepository) Update(ctx context.Context, userId uint, usedAmount uint) (deposits.Domain, error) {
 	var deposit Deposits
 	if err := d.Conn.Where("user_id = ?", userId).First(&deposit).Error; err != nil {
 		return deposits.Domain{}, err
 	}
-	deposit.Amount += amount
+	deposit.Amount = deposit.Amount - usedAmount
+	deposit.UsedAmount += usedAmount
 	deposit.UpdatedAt = time.Now()
 	if err := d.Conn.Save(&deposit).Error; err != nil {
 		return deposits.Domain{}, err

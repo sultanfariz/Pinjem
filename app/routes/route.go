@@ -67,10 +67,9 @@ func (c ControllerList) InitRoutes(e *echo.Echo) {
 
 		// // order routes
 		admins.GET("/orders", c.OrderController.GetAll, jwt)
-		admins.GET("/orders/my", c.OrderController.GetMyOrders, jwt)
 		admins.GET("/orders/:orderId", c.OrderController.GetById, jwt)
+		admins.PATCH("/orders/:orderId", c.OrderController.UpdateStatus, jwt)
 		admins.DELETE("/orders/:orderId", c.OrderController.Delete, jwt)
-		// // admins.GET("/:userId", c.OrderController.GetByUserId, jwt)
 	}
 
 	// user routes
@@ -87,55 +86,4 @@ func (c ControllerList) InitRoutes(e *echo.Echo) {
 		users.POST("/orders", c.OrderController.Create, jwt)
 		users.GET("/orders/my", c.OrderController.GetMyOrders, jwt)
 	}
-
-	// // user routes
-	// users := v1.Group("/users")
-	// users.GET("/my", c.UserController.GetMyUserProfile, jwt)
-
-	// users.Use(helpers.AdminRoleValidation)
-	// users.GET("/all", c.UserController.GetAll, jwt)
-	// users.GET("/:userId", c.UserController.GetById, jwt)
-
-	// // book routes
-	// books := v1.Group("/books")
-	// {
-	// 	books.GET("/:bookId", c.BookController.GetById)
-	// 	books.GET("/all", c.BookController.GetAll)
-	// }
-	// adminBooks := v1.Group("/books")
-	// adminBooks.Use(helpers.AdminRoleValidation)
-	// {
-	// 	adminBooks.POST("", c.BookController.Create, jwt)
-	// }
-
-	// // deposit routes
-	// userDeposits := v1.Group("/deposits")
-	// userDeposits.Use(helpers.UserRoleValidation)
-	// {
-	// 	userDeposits.POST("/my", c.DepositController.Update, jwt)
-	// }
-	// adminDeposits := v1.Group("/deposits")
-	// adminDeposits.Use(helpers.AdminRoleValidation)
-	// {
-	// 	adminDeposits.GET("/:userId", c.DepositController.GetByUserId, jwt)
-	// 	adminDeposits.GET("", c.DepositController.GetAll, jwt)
-	// }
-
-	// // order routes
-	// userOrders := v1.Group("/orders")
-	// userOrders.Use(helpers.UserRoleValidation)
-	// {
-	// 	userOrders.POST("", c.OrderController.Create, jwt)
-	// 	// userOrders.GET("/my", c.OrderController.GetMyOrders, jwt)
-	// }
-	// adminOrders := v1.Group("/orders")
-	// adminOrders.Use(helpers.AdminRoleValidation)
-	// {
-	// 	adminOrders.GET("", c.OrderController.GetAll, jwt)
-	// 	adminOrders.GET("/:orderId", c.OrderController.GetById, jwt)
-	// 	// adminOrders.GET("/:userId", c.OrderController.GetByUserId, jwt)
-	// }
-
-	// bookOrder routes
-
 }

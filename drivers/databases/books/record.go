@@ -29,6 +29,7 @@ type Books struct {
 	Publisher     string `gorm:"type:varchar(100);not null"`
 	PublishDate   string `gorm:"type:varchar(100);not null"`
 	Title         string `gorm:"type:varchar(100);not null"`
+	Authors       string `gorm:"type:varchar(256);not null"`
 	Description   string `gorm:"type:text;not null"`
 	Language      string `gorm:"type:varchar(100);not null"`
 	Picture       string `gorm:"type:text;not null"`

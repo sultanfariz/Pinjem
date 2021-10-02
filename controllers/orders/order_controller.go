@@ -217,7 +217,7 @@ func (o *OrderController) Create(c echo.Context) error {
 	}
 
 	// update deposit amount
-	_, err = o.DepositUsecase.Update(ctx, id, deposit.Amount-totalDeposit)
+	_, err = o.DepositUsecase.Update(ctx, id, totalDeposit)
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
 	}
@@ -231,6 +231,51 @@ func (o *OrderController) Create(c echo.Context) error {
 		Status:    order.Status,
 		CreatedAt: order.CreatedAt,
 		UpdatedAt: order.UpdatedAt,
+	}
+
+	return controllers.SuccessResponse(c, OrderResponse)
+}
+
+func (o *OrderController) UpdateStatus(c echo.Context) error {
+	ctx := c.Request().Context()
+	orderIdParam := c.Param("orderId")
+	orderIdInt, _ := (strconv.Atoi(orderIdParam))
+	orderId := uint(orderIdInt)
+	var updateOrderStatus requests.UpdateOrderStatus
+	c.Bind(&updateOrderStatus)
+
+	order, err := o.Usecase.UpdateStatus(ctx, orderId, updateOrderStatus.Status)
+	if order.Id == 0 {
+		return controllers.ErrorResponse(c, http.StatusBadRequest, exceptions.ErrOrderNotFound)
+	}
+	if err != nil {
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+	}
+
+	books, err := o.BookOrderUsecase.GetByOrderId(ctx, orderId)
+	if err != nil {
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+	}
+
+	var bookIds []string
+	for _, book := range books {
+		bookIds = append(bookIds, book.BookId)
+	}
+
+	OrderResponse := responses.OrderResponse{
+		ID:            order.Id,
+		UserId:        order.UserId,
+		OrderDate:     order.OrderDate,
+		ExpDate:       order.ExpDate,
+		BookId:        bookIds,
+		DestProvinsi:  order.DestProvinsi,
+		DestKota:      order.DestKota,
+		DestKecamatan: order.DestKecamatan,
+		DestDesa:      order.DestDesa,
+		DestAddress:   order.DestAddress,
+		Status:        order.Status,
+		CreatedAt:     order.CreatedAt,
+		UpdatedAt:     order.UpdatedAt,
 	}
 
 	return controllers.SuccessResponse(c, OrderResponse)

@@ -3,7 +3,7 @@ package orders
 import (
 	"Pinjem/businesses/orders"
 	"context"
-	"log"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -50,13 +50,25 @@ func (b *OrderRepository) Create(ctx context.Context, order orders.Domain) (orde
 		Status: order.Status,
 	}
 	createdOrder.BeforeCreate()
-	log.Println(createdOrder)
 
 	insertErr := b.Conn.Create(&createdOrder).Error
 	if insertErr != nil {
 		return orders.Domain{}, insertErr
 	}
 	return createdOrder.ToDomain(), nil
+}
+
+func (b *OrderRepository) UpdateStatus(ctx context.Context, id uint, status bool) (orders.Domain, error) {
+	var orderModel Orders
+	if err := b.Conn.Where("id = ?", id).First(&orderModel).Error; err != nil {
+		return orders.Domain{}, err
+	}
+	orderModel.Status = status
+	orderModel.UpdatedAt = time.Now()
+	if err := b.Conn.Save(&orderModel).Error; err != nil {
+		return orders.Domain{}, err
+	}
+	return orderModel.ToDomain(), nil
 }
 
 func (b *OrderRepository) Delete(ctx context.Context, id uint) error {
@@ -69,8 +81,4 @@ func (b *OrderRepository) Delete(ctx context.Context, id uint) error {
 
 // func (b *OrderRepository) Update(user *User) error {
 // 	return b.Conn.Save(user).Error
-// }
-
-// func (b *OrderRepository) Delete(user *User) error {
-// 	return b.Conn.Delete(user).Error
 // }

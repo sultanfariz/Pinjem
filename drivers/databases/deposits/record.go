@@ -8,12 +8,13 @@ import (
 )
 
 type Deposits struct {
-	ID        uint `gorm:"primary_key"`
-	UserID    uint `gorm:"not null; unique"`
-	Amount    uint `gorm:"not null"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt `gorm:"index"`
+	ID         uint `gorm:"primary_key"`
+	UserID     uint `gorm:"not null; unique"`
+	Amount     uint `gorm:"not null"`
+	UsedAmount uint `gorm:"not null"`
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	DeletedAt  gorm.DeletedAt `gorm:"index"`
 }
 
 func (Deposits) TableName() string {

@@ -38,6 +38,16 @@ type KeyStruct struct {
 // }
 
 type CreateOrder struct {
-	Books []string `json:"books"`
-	// Books []int `json:"books"`
+	Books         []string `json:"books" form:"books"`
+	DestProvinsi  string   `json:"dest_provinsi" form:"dest_provinsi"`
+	DestKota      string   `json:"dest_kota" form:"dest_kota"`
+	DestKecamatan string   `json:"dest_kecamatan" form:"dest_kecamatan"`
+	DestDesa      string   `json:"dest_desa" form:"dest_desa"`
+	DestAddress   string   `json:"dest_address" form:"dest_address"`
+	Ongkir        string   `json:"ongkir" form:"ongkir"`
+	PaymentMethod string   `json:"payment_method" form:"payment_method"`
+}
+
+type UpdateOrderStatus struct {
+	Status bool `json:"status" form:"status"`
 }

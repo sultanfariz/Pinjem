@@ -38,14 +38,14 @@ type KeyStruct struct {
 // }
 
 type CreateOrder struct {
-	Books         []string `json:"books" form:"books"`
-	DestProvinsi  string   `json:"dest_provinsi" form:"dest_provinsi"`
-	DestKota      string   `json:"dest_kota" form:"dest_kota"`
-	DestKecamatan string   `json:"dest_kecamatan" form:"dest_kecamatan"`
-	DestDesa      string   `json:"dest_desa" form:"dest_desa"`
-	DestAddress   string   `json:"dest_address" form:"dest_address"`
-	Ongkir        string   `json:"ongkir" form:"ongkir"`
-	PaymentMethod string   `json:"payment_method" form:"payment_method"`
+	Books          []string `json:"books" form:"books"`
+	DestProvinsi   string   `json:"dest_provinsi" form:"dest_provinsi"`
+	DestKota       string   `json:"dest_kota" form:"dest_kota"`
+	DestKecamatan  string   `json:"dest_kecamatan" form:"dest_kecamatan"`
+	DestDesa       string   `json:"dest_desa" form:"dest_desa"`
+	DestAddress    string   `json:"dest_address" form:"dest_address"`
+	DestPostalCode string   `json:"dest_postal_code" form:"dest_postal_code"`
+	ShippingCost   uint     `json:"shipping_cost" form:"shipping_cost"`
 }
 
 type UpdateOrderStatus struct {

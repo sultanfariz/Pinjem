@@ -93,16 +93,7 @@ func (o *OrderController) GetMyOrders(c echo.Context) error {
 			bookIds = append(bookIds, book.BookId)
 		}
 
-		response[i] = responses.OrderResponse{
-			ID:        order.Id,
-			UserId:    order.UserId,
-			OrderDate: order.OrderDate,
-			ExpDate:   order.ExpDate,
-			BookId:    bookIds,
-			Status:    order.Status,
-			CreatedAt: order.CreatedAt,
-			UpdatedAt: order.UpdatedAt,
-		}
+		response[i] = responses.FromDomain(order, bookIds)
 	}
 	return controllers.SuccessResponse(c, response)
 }
@@ -113,7 +104,7 @@ func (o *OrderController) GetById(c echo.Context) error {
 	orderIdParam := c.Param("orderId")
 	orderIdInt, _ := (strconv.Atoi(orderIdParam))
 	orderId := uint(orderIdInt)
-	user, err := o.Usecase.GetById(ctx, orderId)
+	order, err := o.Usecase.GetById(ctx, orderId)
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
 	}
@@ -128,16 +119,7 @@ func (o *OrderController) GetById(c echo.Context) error {
 		bookIds = append(bookIds, book.BookId)
 	}
 
-	response := responses.OrderResponse{
-		ID:        user.Id,
-		UserId:    user.UserId,
-		OrderDate: user.OrderDate,
-		ExpDate:   user.ExpDate,
-		BookId:    bookIds,
-		Status:    user.Status,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
-	}
+	response := responses.FromDomain(order, bookIds)
 
 	return controllers.SuccessResponse(c, response)
 }
@@ -154,8 +136,15 @@ func (o *OrderController) Create(c echo.Context) error {
 	}
 	id := uint(userId)
 	orderDomain := orders.Domain{
-		UserId: id,
-		Status: true,
+		UserId:         id,
+		DestProvinsi:   createdOrder.DestProvinsi,
+		DestKota:       createdOrder.DestKota,
+		DestKecamatan:  createdOrder.DestKecamatan,
+		DestDesa:       createdOrder.DestDesa,
+		DestAddress:    createdOrder.DestAddress,
+		DestPostalCode: createdOrder.DestPostalCode,
+		ShippingCost:   createdOrder.ShippingCost,
+		Status:         true,
 	}
 
 	// input order to db
@@ -195,7 +184,8 @@ func (o *OrderController) Create(c echo.Context) error {
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
 	}
-	if deposit.Amount < totalDeposit {
+	cost := order.ShippingCost + totalDeposit
+	if deposit.Amount < cost {
 		_ = o.Usecase.Delete(ctx, order.Id)
 		return controllers.ErrorResponse(c, http.StatusBadRequest, exceptions.ErrInsufficientBalance)
 	}
@@ -222,16 +212,7 @@ func (o *OrderController) Create(c echo.Context) error {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
 	}
 
-	OrderResponse := responses.OrderResponse{
-		ID:        order.Id,
-		UserId:    order.UserId,
-		OrderDate: order.OrderDate,
-		ExpDate:   order.ExpDate,
-		BookId:    createdOrder.Books,
-		Status:    order.Status,
-		CreatedAt: order.CreatedAt,
-		UpdatedAt: order.UpdatedAt,
-	}
+	OrderResponse := responses.FromDomain(order, createdOrder.Books)
 
 	return controllers.SuccessResponse(c, OrderResponse)
 }

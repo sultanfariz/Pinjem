@@ -1,4 +1,4 @@
-package orders
+package shipping_details
 
 import (
 	context "context"
@@ -7,10 +7,7 @@ import (
 
 type Domain struct {
 	Id             uint
-	UserId         uint
-	OrderDate      time.Time
-	ExpDate        time.Time
-	Status         bool
+	OrderId        uint
 	DestProvinsi   string
 	DestKota       string
 	DestKecamatan  string
@@ -25,18 +22,16 @@ type Domain struct {
 
 type DomainRepository interface {
 	GetAll(ctx context.Context) ([]Domain, error)
-	GetOrdersByUserId(ctx context.Context, userId uint) ([]Domain, error)
+	GetByOrderId(ctx context.Context, userId uint) ([]Domain, error)
 	GetById(ctx context.Context, id uint) (Domain, error)
 	Create(ctx context.Context, domain Domain) (Domain, error)
-	UpdateStatus(ctx context.Context, id uint, status bool) (Domain, error)
 	Delete(ctx context.Context, id uint) error
 }
 
 type DomainService interface {
 	GetAll(ctx context.Context) ([]Domain, error)
-	GetOrdersByUserId(ctx context.Context, userId uint) ([]Domain, error)
+	GetByOrderId(ctx context.Context, userId uint) ([]Domain, error)
 	GetById(ctx context.Context, id uint) (Domain, error)
 	Create(ctx context.Context, domain Domain) (Domain, error)
-	UpdateStatus(ctx context.Context, id uint, status bool) (Domain, error)
 	Delete(ctx context.Context, id uint) error
 }

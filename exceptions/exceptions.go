@@ -13,4 +13,8 @@ var (
 	ErrInsufficientBalance = errors.New("insufficient balance")
 	// ErrBookNotFound is thrown when the book is not found
 	ErrBookNotFound = errors.New("book not found")
+	// ErrUserNotFound is thrown when the user is not found
+	ErrUserNotFound = errors.New("user not found")
+	// ErrOrderNotFound is thrown when the order is not found
+	ErrOrderNotFound = errors.New("order not found")
 )

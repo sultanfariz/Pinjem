@@ -22,6 +22,7 @@ type DomainRepository interface {
 	Create(ctx context.Context, domain Domain) (Domain, error)
 	// Update(ctx context.Context, domain Domain) (Domain, error)
 	// Delete(ctx context.Context, id uint) (Domain, error)
+	DeleteByOrderId(ctx context.Context, orderId uint) error
 }
 
 type DomainService interface {
@@ -31,4 +32,5 @@ type DomainService interface {
 	Create(ctx context.Context, domain Domain) (Domain, error)
 	// Update(ctx context.Context, domain Domain) (Domain, error)
 	// Delete(ctx context.Context, id uint) (Domain, error)
+	DeleteByOrderId(ctx context.Context, orderId uint) error
 }

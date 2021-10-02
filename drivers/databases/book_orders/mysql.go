@@ -61,16 +61,20 @@ func (b *BookOrderRepository) Create(ctx context.Context, bookOrder bookOrders.D
 
 func (b *BookOrderRepository) Delete(ctx context.Context, id string) error {
 	var book BookOrders
-	if err := b.Conn.Where("book_id = ?", id).First(&book).Error; err != nil {
+	if err := b.Conn.Where("id = ?", id).Delete(&book).Error; err != nil {
 		return err
 	}
-	return b.Conn.Delete(&book).Error
+	return nil
+}
+
+func (b *BookOrderRepository) DeleteByOrderId(ctx context.Context, orderId uint) error {
+	var book BookOrders
+	if err := b.Conn.Where("order_id = ?", orderId).Delete(&book).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 // func (b *BookOrderRepository) Update(user *User) error {
 // 	return b.Conn.Save(user).Error
-// }
-
-// func (b *BookOrderRepository) Delete(user *User) error {
-// 	return b.Conn.Delete(user).Error
 // }

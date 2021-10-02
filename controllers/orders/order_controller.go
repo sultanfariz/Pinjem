@@ -10,6 +10,7 @@ import (
 	"Pinjem/controllers/orders/responses"
 	"Pinjem/exceptions"
 	"Pinjem/helpers"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -143,7 +144,6 @@ func (o *OrderController) GetById(c echo.Context) error {
 
 func (o *OrderController) Create(c echo.Context) error {
 	ctx := c.Request().Context()
-
 	createdOrder := requests.CreateOrder{}
 	c.Bind(&createdOrder)
 
@@ -153,7 +153,6 @@ func (o *OrderController) Create(c echo.Context) error {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
 	}
 	id := uint(userId)
-
 	orderDomain := orders.Domain{
 		UserId: id,
 		Status: true,
@@ -172,7 +171,8 @@ func (o *OrderController) Create(c echo.Context) error {
 		// check if book available and get book price
 		book, err := o.BookUsecase.GetById(ctx, bookId)
 		if book.Id == 0 || !book.Status {
-			err = o.Usecase.Delete(ctx, order.Id)
+			log.Println(book.Id, book.Status)
+			_ = o.Usecase.Delete(ctx, order.Id)
 			return controllers.ErrorResponse(c, http.StatusBadRequest, exceptions.ErrBookNotFound)
 		}
 		if err != nil {
@@ -234,4 +234,54 @@ func (o *OrderController) Create(c echo.Context) error {
 	}
 
 	return controllers.SuccessResponse(c, OrderResponse)
+}
+
+func (o *OrderController) Delete(c echo.Context) error {
+	ctx := c.Request().Context()
+	orderIdParam := c.Param("orderId")
+	orderIdInt, _ := (strconv.Atoi(orderIdParam))
+	orderId := uint(orderIdInt)
+
+	// get order by id
+	order, err := o.Usecase.GetById(ctx, orderId)
+	if order.Id == 0 {
+		return controllers.ErrorResponse(c, http.StatusBadRequest, exceptions.ErrOrderNotFound)
+	}
+	if err != nil {
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+	}
+
+	// get book order by order id
+	bookOrders, err := o.BookOrderUsecase.GetByOrderId(ctx, orderId)
+	if err != nil {
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+	}
+
+	// get book id from book order
+	var bookIds []string
+	for _, bookOrder := range bookOrders {
+		bookIds = append(bookIds, bookOrder.BookId)
+	}
+
+	// update book status
+	for _, bookId := range bookIds {
+		_, err := o.BookUsecase.UpdateStatus(ctx, bookId, true)
+		if err != nil {
+			return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		}
+	}
+
+	// delete book order
+	err = o.BookOrderUsecase.DeleteByOrderId(ctx, orderId)
+	if err != nil {
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+	}
+
+	// delete order
+	err = o.Usecase.Delete(ctx, orderId)
+	if err != nil {
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+	}
+
+	return controllers.SuccessResponse(c, nil)
 }

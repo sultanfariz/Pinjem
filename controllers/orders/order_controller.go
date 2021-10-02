@@ -217,7 +217,7 @@ func (o *OrderController) Create(c echo.Context) error {
 	}
 
 	// update deposit amount
-	_, err = o.DepositUsecase.Update(ctx, id, totalDeposit)
+	_, err = o.DepositUsecase.Update(ctx, id, deposit.Amount-totalDeposit, totalDeposit)
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
 	}

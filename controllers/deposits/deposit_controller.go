@@ -79,7 +79,7 @@ func (d *DepositController) Update(c echo.Context) error {
 	amountInt, _ := strconv.Atoi(amount)
 	amountUInt := uint(amountInt)
 
-	deposit, err := d.Usecase.Update(ctx, id, amountUInt)
+	deposit, err := d.Usecase.TopUp(ctx, id, amountUInt)
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
 	}

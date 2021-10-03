@@ -46,26 +46,26 @@ func (o *OrderController) GetAll(c echo.Context) error {
 
 	response := make([]responses.OrderResponse, len(orders))
 	for i, order := range orders {
+		// get books data
 		books, err := o.BookOrderUsecase.GetByOrderId(ctx, order.Id)
 		if err != nil {
 			return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 		}
-
 		var bookIds []string
 		for _, book := range books {
 			bookIds = append(bookIds, book.BookId)
 		}
 
-		response[i] = responses.OrderResponse{
-			ID:        order.Id,
-			UserId:    order.UserId,
-			OrderDate: order.OrderDate,
-			ExpDate:   order.ExpDate,
-			BookId:    bookIds,
-			Status:    order.Status,
-			CreatedAt: order.CreatedAt,
-			UpdatedAt: order.UpdatedAt,
+		// get shipping detail data
+		shippingDetail, err := o.ShippingDetailUsecase.GetByOrderId(ctx, order.Id)
+		if shippingDetail.Id == 0 {
+			shippingDetail = shippingDetails.Domain{}
 		}
+		if err != nil {
+			return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
+		}
+
+		response[i] = responses.FromDomain(order, shippingDetail, bookIds)
 	}
 	return controllers.SuccessResponse(c, response)
 }
@@ -249,7 +249,7 @@ func (o *OrderController) Create(c echo.Context) error {
 	}
 
 	// update deposit amount
-	_, err = o.DepositUsecase.Update(ctx, id, deposit.Amount-totalDeposit, totalDeposit)
+	_, err = o.DepositUsecase.Update(ctx, id, deposit.Amount-cost, totalDeposit)
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
@@ -312,21 +312,17 @@ func (o *OrderController) UpdateStatus(c echo.Context) error {
 	}
 
 	// update deposit amount
-	_, err = o.DepositUsecase.TopUp(ctx, order.UserId, totalRefund)
+	deposit, err := o.DepositUsecase.GetByUserId(ctx, order.UserId)
+	if err != nil {
+		_, _ = o.Usecase.UpdateStatus(ctx, orderId, !updateOrderStatus.Status)
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
+	}
+	_, err = o.DepositUsecase.Update(ctx, order.UserId, (deposit.Amount + totalRefund), (deposit.UsedAmount - totalRefund))
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 
-	OrderResponse := responses.OrderResponse{
-		ID:        order.Id,
-		UserId:    order.UserId,
-		OrderDate: order.OrderDate,
-		ExpDate:   order.ExpDate,
-		BookId:    bookIds,
-		Status:    order.Status,
-		CreatedAt: order.CreatedAt,
-		UpdatedAt: order.UpdatedAt,
-	}
+	OrderResponse := responses.FromDomain(order, shippingDetail, bookIds)
 
 	return controllers.SuccessResponse(c, OrderResponse)
 }
@@ -398,7 +394,11 @@ func (o *OrderController) Delete(c echo.Context) error {
 	}
 
 	// update deposit amount
-	_, err = o.DepositUsecase.TopUp(ctx, order.UserId, (shippingDetail.ShippingCost + totalRefund))
+	deposit, err := o.DepositUsecase.GetByUserId(ctx, order.UserId)
+	if err != nil {
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
+	}
+	_, err = o.DepositUsecase.Update(ctx, order.UserId, (deposit.Amount + shippingDetail.ShippingCost + totalRefund), (deposit.UsedAmount - totalRefund))
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}

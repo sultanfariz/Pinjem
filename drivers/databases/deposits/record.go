@@ -29,21 +29,23 @@ func (d *Deposits) BeforeCreate(tx *gorm.DB) (err error) {
 
 func (d *Deposits) ToDomain() deposits.Domain {
 	return deposits.Domain{
-		Id:        d.ID,
-		UserId:    d.UserID,
-		Amount:    d.Amount,
-		CreatedAt: d.CreatedAt,
-		UpdatedAt: d.UpdatedAt,
+		Id:         d.ID,
+		UserId:     d.UserID,
+		Amount:     d.Amount,
+		UsedAmount: d.UsedAmount,
+		CreatedAt:  d.CreatedAt,
+		UpdatedAt:  d.UpdatedAt,
 	}
 }
 
 func FromDomain(domain deposits.Domain) Deposits {
 	return Deposits{
-		ID:        domain.Id,
-		UserID:    domain.UserId,
-		Amount:    domain.Amount,
-		CreatedAt: domain.CreatedAt,
-		UpdatedAt: domain.UpdatedAt,
+		ID:         domain.Id,
+		UserID:     domain.UserId,
+		Amount:     domain.Amount,
+		UsedAmount: domain.UsedAmount,
+		CreatedAt:  domain.CreatedAt,
+		UpdatedAt:  domain.UpdatedAt,
 	}
 }
 

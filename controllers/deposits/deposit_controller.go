@@ -32,13 +32,7 @@ func (d *DepositController) GetAll(c echo.Context) error {
 
 	response := make([]responses.DepositResponse, len(deposits))
 	for i, deposit := range deposits {
-		response[i] = responses.DepositResponse{
-			ID:        deposit.Id,
-			UserId:    deposit.UserId,
-			Amount:    deposit.Amount,
-			CreatedAt: deposit.CreatedAt,
-			UpdatedAt: deposit.UpdatedAt,
-		}
+		response[i] = responses.FromDomain(deposit)
 	}
 	return controllers.SuccessResponse(c, response)
 }
@@ -55,13 +49,7 @@ func (d *DepositController) GetByUserId(c echo.Context) error {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
 	}
 
-	response := responses.DepositResponse{
-		ID:        deposit.Id,
-		UserId:    deposit.UserId,
-		Amount:    deposit.Amount,
-		CreatedAt: deposit.CreatedAt,
-		UpdatedAt: deposit.UpdatedAt,
-	}
+	response := responses.FromDomain(deposit)
 
 	return controllers.SuccessResponse(c, response)
 }

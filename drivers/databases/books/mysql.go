@@ -47,6 +47,7 @@ func (b *BookRepository) Create(ctx context.Context, book books.Domain) (books.D
 		BookId:        book.BookId,
 		ISBN:          book.ISBN,
 		Title:         book.Title,
+		Authors:       book.Authors,
 		Publisher:     book.Publisher,
 		PublishDate:   book.PublishDate,
 		Description:   book.Description,

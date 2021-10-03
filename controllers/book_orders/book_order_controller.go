@@ -4,6 +4,7 @@ import (
 	bookOrders "Pinjem/businesses/book_orders"
 	"Pinjem/controllers"
 	"Pinjem/controllers/book_orders/responses"
+	"Pinjem/exceptions"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -24,7 +25,7 @@ func (b *BookOrderController) GetAll(c echo.Context) error {
 
 	bookOrders, err := b.Usecase.GetAll(ctx)
 	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 
 	response := make([]responses.BookOrderResponse, len(bookOrders))
@@ -52,7 +53,7 @@ func (u *BookOrderController) GetById(c echo.Context) error {
 	// bookOrderId := uint(bookOrderIdInt)
 	bookOrder, err := u.Usecase.GetById(ctx, bookOrderId)
 	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 	response := responses.FromDomain(bookOrder)
 	// response := responses.BookOrderResponse{
@@ -74,7 +75,7 @@ func (u *BookOrderController) GetById(c echo.Context) error {
 
 // 	userId, err := helpers.ExtractJWTPayloadUserId(c)
 // 	if err != nil {
-// 		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+// 		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 // 	}
 
 // 	id := uint(userId)
@@ -87,7 +88,7 @@ func (u *BookOrderController) GetById(c echo.Context) error {
 
 // 	order, err := b.Usecase.Create(ctx, orderDomain)
 // 	if err != nil {
-// 		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+// 		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 // 	}
 
 // 	bookOrderResponse := responses.BookOrderResponse{

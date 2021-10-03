@@ -5,10 +5,13 @@ import (
 	"Pinjem/controllers"
 	"Pinjem/controllers/books/requests"
 	"Pinjem/controllers/books/responses"
+	"Pinjem/exceptions"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -32,28 +35,12 @@ func (b *BookController) GetAll(c echo.Context) error {
 
 	books, err := b.Usecase.GetAll(ctx)
 	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 
 	response := make([]responses.BookResponse, len(books))
 	for i, book := range books {
-		response[i] = responses.BookResponse{
-			ID:     book.Id,
-			BookId: book.BookId,
-			// WorkId:        book.WorkId,
-			ISBN:          book.ISBN,
-			Publisher:     book.Publisher,
-			PublishDate:   book.PublishDate,
-			Title:         book.Title,
-			Description:   book.Description,
-			Language:      book.Language,
-			Picture:       book.Picture,
-			MinDeposit:    book.MinDeposit,
-			NumberOfPages: book.NumberOfPages,
-			Status:        book.Status,
-			CreatedAt:     book.CreatedAt,
-			UpdatedAt:     book.UpdatedAt,
-		}
+		response[i] = responses.FromDomain(book)
 	}
 	return controllers.SuccessResponse(c, response)
 }
@@ -62,31 +49,12 @@ func (u *BookController) GetById(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	bookId := c.Param("bookId")
-	// bookIdParam := c.Param("bookId")
-	// bookIdInt, _ := (strconv.Atoi(bookIdParam))
-	// bookId := uint(bookIdInt)
-	user, err := u.Usecase.GetById(ctx, bookId)
+	book, err := u.Usecase.GetById(ctx, bookId)
 	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 
-	response := responses.BookResponse{
-		ID:     user.Id,
-		BookId: user.BookId,
-		// WorkId:        user.WorkId,
-		ISBN:          user.ISBN,
-		Publisher:     user.Publisher,
-		PublishDate:   user.PublishDate,
-		Title:         user.Title,
-		Description:   user.Description,
-		Language:      user.Language,
-		Picture:       user.Picture,
-		NumberOfPages: user.NumberOfPages,
-		MinDeposit:    user.MinDeposit,
-		Status:        user.Status,
-		CreatedAt:     user.CreatedAt,
-		UpdatedAt:     user.UpdatedAt,
-	}
+	response := responses.FromDomain(book)
 
 	return controllers.SuccessResponse(c, response)
 }
@@ -100,7 +68,7 @@ func (b *BookController) Create(c echo.Context) error {
 	// check if book already exist
 	dbBook, err := b.Usecase.GetByISBN(ctx, createdBook.ISBN)
 	if err != nil && err.Error() != "record not found" {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 	if dbBook.ISBN != "" {
 		return controllers.ErrorResponse(c, http.StatusForbidden, fmt.Errorf("ISBN already exist"))
@@ -110,15 +78,17 @@ func (b *BookController) Create(c echo.Context) error {
 	url := fmt.Sprintf("https://www.googleapis.com/books/v1/volumes?q=+isbn:%s", createdBook.ISBN)
 	response, err := http.Get(url)
 	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 	responseData, _ := ioutil.ReadAll(response.Body)
 	var bookReq requests.GetGoogleBookByISBN
 	json.Unmarshal(responseData, &bookReq)
 
 	if len(bookReq.Items) == 0 {
-		return controllers.ErrorResponse(c, http.StatusNotFound, fmt.Errorf("Book not found"))
+		return controllers.ErrorResponse(c, http.StatusNotFound, exceptions.ErrBookNotFound)
 	}
+
+	authors := strings.Join(bookReq.Items[0].VolumeInfo.Authors, ", ")
 
 	bookDomain := books.Domain{
 		BookId:        bookReq.Items[0].Id,
@@ -126,6 +96,7 @@ func (b *BookController) Create(c echo.Context) error {
 		Publisher:     bookReq.Items[0].VolumeInfo.Publisher,
 		PublishDate:   bookReq.Items[0].VolumeInfo.PublishedDate,
 		Title:         bookReq.Items[0].VolumeInfo.Title,
+		Authors:       authors,
 		Description:   bookReq.Items[0].VolumeInfo.Description,
 		Language:      bookReq.Items[0].VolumeInfo.Language,
 		Picture:       bookReq.Items[0].VolumeInfo.ImageLinks.Thumbnail,
@@ -133,28 +104,14 @@ func (b *BookController) Create(c echo.Context) error {
 		MinDeposit:    createdBook.MinDeposit,
 		Status:        createdBook.Status,
 	}
+	log.Println(bookDomain)
 
 	book, err := b.Usecase.Create(ctx, bookDomain)
 	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 
-	bookResponse := responses.BookResponse{
-		ID:            book.Id,
-		BookId:        book.BookId,
-		ISBN:          book.ISBN,
-		Publisher:     book.Publisher,
-		PublishDate:   book.PublishDate,
-		Title:         book.Title,
-		Description:   book.Description,
-		Language:      book.Language,
-		Picture:       book.Picture,
-		NumberOfPages: book.NumberOfPages,
-		MinDeposit:    book.MinDeposit,
-		Status:        book.Status,
-		CreatedAt:     book.CreatedAt,
-		UpdatedAt:     book.UpdatedAt,
-	}
+	bookResponse := responses.FromDomain(book)
 
 	return controllers.SuccessResponse(c, bookResponse)
 }
@@ -166,11 +123,11 @@ func (b *BookController) Create(c echo.Context) error {
 // 	statusBody := c.FormValue("status")
 // 	minDeposit, err := strconv.Atoi(minDepositBody)
 // 	if err != nil {
-// 		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+// 		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 // 	}
 // 	status, err := strconv.ParseBool(statusBody)
 // 	if err != nil {
-// 		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+// 		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 // 	}
 
 // 	idParam := c.Param("isbn")
@@ -187,7 +144,7 @@ func (b *BookController) Create(c echo.Context) error {
 // 	log.Println(response)
 // 	if err != nil {
 // 		log.Println("---------------------")
-// 		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+// 		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 // 	}
 // 	responseData, _ := ioutil.ReadAll(response.Body)
 // 	var bookReq requests.GetBookByISBN
@@ -214,7 +171,7 @@ func (b *BookController) Create(c echo.Context) error {
 // 	log.Println("---------------------")
 // 	response, err = http.Get(getBookByWorkUrl)
 // 	if err != nil {
-// 		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+// 		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 // 	}
 // 	responseData, _ = ioutil.ReadAll(response.Body)
 // 	var bookByWorkReq requests.GetBookByWorkId
@@ -240,7 +197,7 @@ func (b *BookController) Create(c echo.Context) error {
 // 	// }
 
 // 	// if err := b.Usecase.Create(ctx, book); err != nil {
-// 	// 	return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+// 	// 	return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 // 	// }
 
 // 	// return controllers.SuccessResponse(c, string(responseData))

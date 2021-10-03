@@ -40,13 +40,13 @@ func (a *AuthController) Login(c echo.Context) error {
 		return controllers.ErrorResponse(c, http.StatusUnauthorized, exceptions.ErrInvalidCredentials)
 	}
 	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 
 	// generate token and cookie
 	token, err := helpers.GenerateToken(int(user.Id), user.Role)
 	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 	expirationTime := time.Now().Add(time.Hour * 24)
 	helpers.SetTokenCookie("token", token, expirationTime, c)
@@ -60,7 +60,7 @@ func (a *AuthController) Register(c echo.Context) error {
 	// upload file KTP
 	file, err := c.FormFile("ktp")
 	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 
 	split := strings.Split(file.Filename, ".")
@@ -94,7 +94,7 @@ func (a *AuthController) Register(c echo.Context) error {
 
 	user, err := a.Usecase.Register(ctx, userDomain)
 	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 	if user.Id == 0 {
 		return controllers.ErrorResponse(c, http.StatusUnauthorized, exceptions.ErrInvalidCredentials)
@@ -108,7 +108,7 @@ func (a *AuthController) Register(c echo.Context) error {
 		}
 		_, err := a.DepositUsecase.Create(ctx, depositDomain)
 		if err != nil {
-			return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+			return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 		}
 	}
 

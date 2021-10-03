@@ -4,6 +4,7 @@ import (
 	"Pinjem/businesses/deposits"
 	"Pinjem/controllers"
 	"Pinjem/controllers/deposits/responses"
+	"Pinjem/exceptions"
 	"Pinjem/helpers"
 	"log"
 	"net/http"
@@ -27,7 +28,7 @@ func (d *DepositController) GetAll(c echo.Context) error {
 
 	deposits, err := d.Usecase.GetAll(ctx)
 	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 
 	response := make([]responses.DepositResponse, len(deposits))
@@ -46,7 +47,7 @@ func (d *DepositController) GetByUserId(c echo.Context) error {
 	id := uint(idInt)
 	deposit, err := d.Usecase.GetByUserId(ctx, id)
 	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 
 	response := responses.FromDomain(deposit)
@@ -59,7 +60,7 @@ func (d *DepositController) Update(c echo.Context) error {
 
 	userId, err := helpers.ExtractJWTPayloadUserId(c)
 	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 	id := uint(userId)
 
@@ -69,7 +70,7 @@ func (d *DepositController) Update(c echo.Context) error {
 
 	deposit, err := d.Usecase.TopUp(ctx, id, amountUInt)
 	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 
 	response := responses.DepositResponse{

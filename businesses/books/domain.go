@@ -29,6 +29,7 @@ type Domain struct {
 	Publisher     string
 	PublishDate   string
 	Title         string
+	Authors       string
 	Description   string
 	Language      string
 	Picture       string

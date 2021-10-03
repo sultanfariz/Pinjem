@@ -55,6 +55,7 @@ func (b *Books) ToDomain() books.Domain {
 		Publisher:   b.Publisher,
 		PublishDate: b.PublishDate,
 		Title:       b.Title,
+		Authors:     b.Authors,
 		// Category:    b.Category,
 		Description:   b.Description,
 		Language:      b.Language,
@@ -69,11 +70,13 @@ func (b *Books) ToDomain() books.Domain {
 
 func FromDomain(domain books.Domain) Books {
 	return Books{
-		ID:        domain.Id,
-		BookId:    domain.BookId,
-		Publisher: domain.Publisher,
-		ISBN:      domain.ISBN,
-		Title:     domain.Title,
+		ID:          domain.Id,
+		BookId:      domain.BookId,
+		Publisher:   domain.Publisher,
+		PublishDate: domain.PublishDate,
+		ISBN:        domain.ISBN,
+		Title:       domain.Title,
+		Authors:     domain.Authors,
 		// Category:    domain.Category,
 		Description:   domain.Description,
 		Language:      domain.Language,

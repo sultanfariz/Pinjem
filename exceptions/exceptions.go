@@ -19,4 +19,6 @@ var (
 	ErrOrderNotFound = errors.New("order not found")
 	// ErrShippingDetailNotFound is thrown when the shipping detail is not found
 	ErrShippingDetailNotFound = errors.New("shipping detail not found")
+	// ErrBookNotAvailable is thrown when the book is not available
+	ErrBookNotAvailable = errors.New("book not available")
 )

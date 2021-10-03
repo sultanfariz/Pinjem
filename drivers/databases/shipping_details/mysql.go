@@ -36,15 +36,15 @@ func (b *ShippingDetailRepository) GetByOrderId(ctx context.Context, orderId uin
 }
 
 func (b *ShippingDetailRepository) GetById(ctx context.Context, id uint) (shippingDetails.Domain, error) {
-	var order ShippingDetails
-	if err := b.Conn.Where("id = ?", id).First(&order).Error; err != nil {
+	var shippingDetail ShippingDetails
+	if err := b.Conn.Where("id = ?", id).First(&shippingDetail).Error; err != nil {
 		return shippingDetails.Domain{}, err
 	}
-	return order.ToDomain(), nil
+	return shippingDetail.ToDomain(), nil
 }
 
-func (b *ShippingDetailRepository) Create(ctx context.Context, order shippingDetails.Domain) (shippingDetails.Domain, error) {
-	createdShippingDetail := FromDomain(order)
+func (b *ShippingDetailRepository) Create(ctx context.Context, shippingDetail shippingDetails.Domain) (shippingDetails.Domain, error) {
+	createdShippingDetail := FromDomain(shippingDetail)
 	createdShippingDetail.BeforeCreate()
 
 	err := b.Conn.Create(&createdShippingDetail).Error
@@ -55,8 +55,8 @@ func (b *ShippingDetailRepository) Create(ctx context.Context, order shippingDet
 }
 
 func (b *ShippingDetailRepository) Delete(ctx context.Context, id uint) error {
-	var order ShippingDetails
-	if err := b.Conn.Where("id = ?", id).Delete(&order).Error; err != nil {
+	var shippingDetail ShippingDetails
+	if err := b.Conn.Where("id = ?", id).Delete(&shippingDetail).Error; err != nil {
 		return err
 	}
 	return nil

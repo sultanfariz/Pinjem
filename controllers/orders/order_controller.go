@@ -11,6 +11,7 @@ import (
 	"Pinjem/controllers/orders/responses"
 	"Pinjem/exceptions"
 	"Pinjem/helpers"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -101,7 +102,7 @@ func (o *OrderController) GetMyOrders(c echo.Context) error {
 		for _, book := range books {
 			bookIds = append(bookIds, book.BookId)
 		}
-
+		log.Println(shippingDetails)
 		response[i] = responses.FromDomain(order, shippingDetails, bookIds)
 	}
 	return controllers.SuccessResponse(c, response)
@@ -151,22 +152,11 @@ func (o *OrderController) Create(c echo.Context) error {
 	}
 	id := uint(userId)
 
-	// declare domain model
+	// input order to db
 	orderDomain := orders.Domain{
 		UserId: id,
 		Status: true,
 	}
-	shippingDetailDomain := shippingDetails.Domain{
-		DestProvinsi:   createdOrder.DestProvinsi,
-		DestKota:       createdOrder.DestKota,
-		DestKecamatan:  createdOrder.DestKecamatan,
-		DestDesa:       createdOrder.DestDesa,
-		DestAddress:    createdOrder.DestAddress,
-		DestPostalCode: createdOrder.DestPostalCode,
-		ShippingCost:   createdOrder.ShippingCost,
-	}
-
-	// input order to db
 	order, err := o.Usecase.Create(ctx, orderDomain)
 	if order.Id == 0 {
 		return controllers.ErrorResponse(c, http.StatusBadRequest, err)
@@ -176,6 +166,16 @@ func (o *OrderController) Create(c echo.Context) error {
 	}
 
 	// store shipping detail to db
+	shippingDetailDomain := shippingDetails.Domain{
+		OrderId:        order.Id,
+		DestProvinsi:   createdOrder.DestProvinsi,
+		DestKota:       createdOrder.DestKota,
+		DestKecamatan:  createdOrder.DestKecamatan,
+		DestDesa:       createdOrder.DestDesa,
+		DestAddress:    createdOrder.DestAddress,
+		DestPostalCode: createdOrder.DestPostalCode,
+		ShippingCost:   createdOrder.ShippingCost,
+	}
 	shippingDetail, err := o.ShippingDetailUsecase.Create(ctx, shippingDetailDomain)
 	if shippingDetail.Id == 0 {
 		_ = o.Usecase.Delete(ctx, order.Id)
@@ -192,10 +192,15 @@ func (o *OrderController) Create(c echo.Context) error {
 	for _, bookId := range createdOrder.Books {
 		// check if book available and get book price
 		book, err := o.BookUsecase.GetById(ctx, bookId)
-		if book.Id == 0 || !book.Status {
+		if book.Id == 0 {
 			_ = o.Usecase.Delete(ctx, order.Id)
 			_ = o.ShippingDetailUsecase.Delete(ctx, shippingDetail.Id)
 			return controllers.ErrorResponse(c, http.StatusBadRequest, exceptions.ErrBookNotFound)
+		}
+		if !book.Status {
+			_ = o.Usecase.Delete(ctx, order.Id)
+			_ = o.ShippingDetailUsecase.Delete(ctx, shippingDetail.Id)
+			return controllers.ErrorResponse(c, http.StatusBadRequest, exceptions.ErrBookNotAvailable)
 		}
 		if err != nil {
 			_ = o.Usecase.Delete(ctx, order.Id)
@@ -273,6 +278,7 @@ func (o *OrderController) UpdateStatus(c echo.Context) error {
 	// get books data
 	books, err := o.BookOrderUsecase.GetByOrderId(ctx, orderId)
 	if err != nil {
+		_, _ = o.Usecase.UpdateStatus(ctx, orderId, !updateOrderStatus.Status)
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 	var bookIds []string
@@ -280,11 +286,33 @@ func (o *OrderController) UpdateStatus(c echo.Context) error {
 		bookIds = append(bookIds, book.BookId)
 	}
 
+	var totalRefund uint = 0
+	// update book status
+	for _, bookId := range bookIds {
+		_, err := o.BookUsecase.UpdateStatus(ctx, bookId, true)
+		if err != nil {
+			return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
+		}
+		book, err := o.BookUsecase.GetById(ctx, bookId)
+		if err != nil {
+			return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
+		}
+		totalRefund += book.MinDeposit
+	}
+
 	// get shipping detail data
 	shippingDetail, err := o.ShippingDetailUsecase.GetByOrderId(ctx, orderId)
 	if shippingDetail.Id == 0 {
-		return controllers.ErrorResponse(c, http.StatusBadRequest, exceptions.ErrBookNotFound)
+		_, _ = o.Usecase.UpdateStatus(ctx, orderId, !updateOrderStatus.Status)
+		return controllers.ErrorResponse(c, http.StatusBadRequest, exceptions.ErrShippingDetailNotFound)
 	}
+	if err != nil {
+		_, _ = o.Usecase.UpdateStatus(ctx, orderId, !updateOrderStatus.Status)
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
+	}
+
+	// update deposit amount
+	_, err = o.DepositUsecase.TopUp(ctx, order.UserId, totalRefund)
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
@@ -330,12 +358,18 @@ func (o *OrderController) Delete(c echo.Context) error {
 		bookIds = append(bookIds, bookOrder.BookId)
 	}
 
+	var totalRefund uint = 0
 	// update book status
 	for _, bookId := range bookIds {
 		_, err := o.BookUsecase.UpdateStatus(ctx, bookId, true)
 		if err != nil {
 			return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 		}
+		book, err := o.BookUsecase.GetById(ctx, bookId)
+		if err != nil {
+			return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
+		}
+		totalRefund += book.MinDeposit
 	}
 
 	// delete book order
@@ -345,6 +379,13 @@ func (o *OrderController) Delete(c echo.Context) error {
 	}
 
 	// delete shipping detail
+	shippingDetail, err := o.ShippingDetailUsecase.GetByOrderId(ctx, orderId)
+	if shippingDetail.Id == 0 {
+		return controllers.ErrorResponse(c, http.StatusBadRequest, exceptions.ErrShippingDetailNotFound)
+	}
+	if err != nil {
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
+	}
 	err = o.ShippingDetailUsecase.DeleteByOrderId(ctx, orderId)
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
@@ -352,6 +393,12 @@ func (o *OrderController) Delete(c echo.Context) error {
 
 	// delete order
 	err = o.Usecase.Delete(ctx, orderId)
+	if err != nil {
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
+	}
+
+	// update deposit amount
+	_, err = o.DepositUsecase.TopUp(ctx, order.UserId, (shippingDetail.ShippingCost + totalRefund))
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}

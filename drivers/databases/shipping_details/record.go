@@ -46,15 +46,17 @@ func (s *ShippingDetails) ToDomain() shippingDetails.Domain {
 
 func FromDomain(domain shippingDetails.Domain) ShippingDetails {
 	return ShippingDetails{
-		ID:            domain.Id,
-		OrderId:       domain.OrderId,
-		DestProvinsi:  domain.DestProvinsi,
-		DestKota:      domain.DestKota,
-		DestKecamatan: domain.DestKecamatan,
-		DestDesa:      domain.DestDesa,
-		DestAddress:   domain.DestAddress,
-		CreatedAt:     domain.CreatedAt,
-		UpdatedAt:     domain.UpdatedAt,
+		ID:             domain.Id,
+		OrderId:        domain.OrderId,
+		DestProvinsi:   domain.DestProvinsi,
+		DestKota:       domain.DestKota,
+		DestKecamatan:  domain.DestKecamatan,
+		DestDesa:       domain.DestDesa,
+		DestAddress:    domain.DestAddress,
+		DestPostalCode: domain.DestPostalCode,
+		ShippingCost:   domain.ShippingCost,
+		CreatedAt:      domain.CreatedAt,
+		UpdatedAt:      domain.UpdatedAt,
 	}
 }
 

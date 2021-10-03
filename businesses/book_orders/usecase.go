@@ -1,4 +1,4 @@
-package books
+package book_orders
 
 import (
 	context "context"
@@ -31,11 +31,11 @@ func (u *Usecase) GetById(ctx context.Context, id string) (Domain, error) {
 	return u.Repo.GetById(ctx, id)
 }
 
-func (u *Usecase) GetByISBN(ctx context.Context, isbn string) (Domain, error) {
+func (u *Usecase) GetByOrderId(ctx context.Context, id uint) ([]Domain, error) {
 	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
 	defer cancel()
 
-	return u.Repo.GetByISBN(ctx, isbn)
+	return u.Repo.GetByOrderId(ctx, id)
 }
 
 func (u *Usecase) Create(ctx context.Context, domain Domain) (Domain, error) {
@@ -45,9 +45,10 @@ func (u *Usecase) Create(ctx context.Context, domain Domain) (Domain, error) {
 	return u.Repo.Create(ctx, domain)
 }
 
-func (u *Usecase) UpdateStatus(ctx context.Context, bookId string, status bool) (Domain, error) {
+func (u *Usecase) DeleteByOrderId(ctx context.Context, id uint) error {
 	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
 	defer cancel()
+	// log.Println("---------------------------------------------------")
 
-	return u.Repo.UpdateStatus(ctx, bookId, status)
+	return u.Repo.DeleteByOrderId(ctx, id)
 }

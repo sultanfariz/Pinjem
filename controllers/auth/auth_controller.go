@@ -36,11 +36,11 @@ func (a *AuthController) Login(c echo.Context) error {
 
 	// check email and password
 	user, err := a.Usecase.Login(ctx, userLogin.Email, userLogin.Password)
-	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
-	}
 	if user.Id == 0 {
 		return controllers.ErrorResponse(c, http.StatusUnauthorized, exceptions.ErrInvalidCredentials)
+	}
+	if err != nil {
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
 	}
 
 	// generate token and cookie

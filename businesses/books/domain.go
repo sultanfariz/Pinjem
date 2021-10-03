@@ -45,6 +45,7 @@ type DomainRepository interface {
 	GetById(ctx context.Context, id string) (Domain, error)
 	GetByISBN(ctx context.Context, isbn string) (Domain, error)
 	Create(ctx context.Context, domain Domain) (Domain, error)
+	UpdateStatus(ctx context.Context, bookId string, status bool) (Domain, error)
 	// Update(ctx context.Context, domain Domain) (Domain, error)
 	// Delete(ctx context.Context, id uint) (Domain, error)
 }
@@ -54,6 +55,7 @@ type DomainService interface {
 	GetById(ctx context.Context, id string) (Domain, error)
 	GetByISBN(ctx context.Context, isbn string) (Domain, error)
 	Create(ctx context.Context, domain Domain) (Domain, error)
+	UpdateStatus(ctx context.Context, bookId string, status bool) (Domain, error)
 	// Update(ctx context.Context, domain Domain) (Domain, error)
 	// Delete(ctx context.Context, id uint) (Domain, error)
 }

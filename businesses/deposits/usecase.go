@@ -38,9 +38,16 @@ func (u *Usecase) Create(ctx context.Context, d Domain) (Domain, error) {
 	return u.Repo.Create(ctx, d)
 }
 
-func (u *Usecase) Update(ctx context.Context, userId uint, amount uint) (Domain, error) {
+func (u *Usecase) Update(ctx context.Context, userId uint, amount uint, usedAmount uint) (Domain, error) {
 	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
 	defer cancel()
 
-	return u.Repo.Update(ctx, userId, amount)
+	return u.Repo.Update(ctx, userId, amount, usedAmount)
+}
+
+func (u *Usecase) TopUp(ctx context.Context, userId uint, amount uint) (Domain, error) {
+	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
+	defer cancel()
+
+	return u.Repo.TopUp(ctx, userId, amount)
 }

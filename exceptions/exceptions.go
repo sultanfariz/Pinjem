@@ -17,4 +17,6 @@ var (
 	ErrUserNotFound = errors.New("user not found")
 	// ErrOrderNotFound is thrown when the order is not found
 	ErrOrderNotFound = errors.New("order not found")
+	// ErrShippingDetailNotFound is thrown when the shipping detail is not found
+	ErrShippingDetailNotFound = errors.New("shipping detail not found")
 )

@@ -22,16 +22,18 @@ type Domain struct {
 
 type DomainRepository interface {
 	GetAll(ctx context.Context) ([]Domain, error)
-	GetByOrderId(ctx context.Context, userId uint) ([]Domain, error)
+	GetByOrderId(ctx context.Context, orderId uint) (Domain, error)
 	GetById(ctx context.Context, id uint) (Domain, error)
 	Create(ctx context.Context, domain Domain) (Domain, error)
 	Delete(ctx context.Context, id uint) error
+	DeleteByOrderId(ctx context.Context, orderId uint) error
 }
 
 type DomainService interface {
 	GetAll(ctx context.Context) ([]Domain, error)
-	GetByOrderId(ctx context.Context, userId uint) ([]Domain, error)
+	GetByOrderId(ctx context.Context, orderId uint) (Domain, error)
 	GetById(ctx context.Context, id uint) (Domain, error)
 	Create(ctx context.Context, domain Domain) (Domain, error)
 	Delete(ctx context.Context, id uint) error
+	DeleteByOrderId(ctx context.Context, orderId uint) error
 }

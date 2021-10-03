@@ -7,15 +7,15 @@ import (
 	"gorm.io/gorm"
 )
 
-type ShippingDetailsRepository struct {
+type ShippingDetailRepository struct {
 	Conn *gorm.DB
 }
 
-func NewShippingDetailsRepository(conn *gorm.DB) shippingDetails.DomainRepository {
-	return &ShippingDetailsRepository{Conn: conn}
+func NewShippingDetailRepository(conn *gorm.DB) shippingDetails.DomainRepository {
+	return &ShippingDetailRepository{Conn: conn}
 }
 
-func (b *ShippingDetailsRepository) GetAll(ctx context.Context) ([]shippingDetails.Domain, error) {
+func (b *ShippingDetailRepository) GetAll(ctx context.Context) ([]shippingDetails.Domain, error) {
 	var shippingDetailsModel []ShippingDetails
 	if err := b.Conn.Find(&shippingDetailsModel).Error; err != nil {
 		return nil, err
@@ -25,17 +25,17 @@ func (b *ShippingDetailsRepository) GetAll(ctx context.Context) ([]shippingDetai
 	return result, nil
 }
 
-func (b *ShippingDetailsRepository) GetByOrderId(ctx context.Context, userId uint) ([]shippingDetails.Domain, error) {
-	var shippingDetailsModel []ShippingDetails
-	if err := b.Conn.Where("user_id = ?", userId).Find(&shippingDetailsModel).Error; err != nil {
-		return nil, err
+func (b *ShippingDetailRepository) GetByOrderId(ctx context.Context, orderId uint) (shippingDetails.Domain, error) {
+	var shippingDetail ShippingDetails
+	if err := b.Conn.Where("order_id = ?", orderId).Find(&shippingDetail).Error; err != nil {
+		return shippingDetails.Domain{}, err
 	}
-	var result []shippingDetails.Domain
-	result = ToListDomain(shippingDetailsModel)
+	var result shippingDetails.Domain
+	result = shippingDetail.ToDomain()
 	return result, nil
 }
 
-func (b *ShippingDetailsRepository) GetById(ctx context.Context, id uint) (shippingDetails.Domain, error) {
+func (b *ShippingDetailRepository) GetById(ctx context.Context, id uint) (shippingDetails.Domain, error) {
 	var order ShippingDetails
 	if err := b.Conn.Where("id = ?", id).First(&order).Error; err != nil {
 		return shippingDetails.Domain{}, err
@@ -43,18 +43,18 @@ func (b *ShippingDetailsRepository) GetById(ctx context.Context, id uint) (shipp
 	return order.ToDomain(), nil
 }
 
-func (b *ShippingDetailsRepository) Create(ctx context.Context, order shippingDetails.Domain) (shippingDetails.Domain, error) {
+func (b *ShippingDetailRepository) Create(ctx context.Context, order shippingDetails.Domain) (shippingDetails.Domain, error) {
 	createdShippingDetail := FromDomain(order)
 	createdShippingDetail.BeforeCreate()
 
-	insertErr := b.Conn.Create(&createdShippingDetail).Error
-	if insertErr != nil {
-		return shippingDetails.Domain{}, insertErr
+	err := b.Conn.Create(&createdShippingDetail).Error
+	if err != nil {
+		return shippingDetails.Domain{}, err
 	}
 	return createdShippingDetail.ToDomain(), nil
 }
 
-func (b *ShippingDetailsRepository) Delete(ctx context.Context, id uint) error {
+func (b *ShippingDetailRepository) Delete(ctx context.Context, id uint) error {
 	var order ShippingDetails
 	if err := b.Conn.Where("id = ?", id).Delete(&order).Error; err != nil {
 		return err
@@ -62,6 +62,14 @@ func (b *ShippingDetailsRepository) Delete(ctx context.Context, id uint) error {
 	return nil
 }
 
-// func (b *ShippingDetailsRepository) Update(user *User) error {
+func (b *ShippingDetailRepository) DeleteByOrderId(ctx context.Context, orderId uint) error {
+	var order ShippingDetails
+	if err := b.Conn.Where("order_id = ?", orderId).Delete(&order).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+// func (b *ShippingDetailRepository) Update(user *User) error {
 // 	return b.Conn.Save(user).Error
 // }

@@ -24,7 +24,7 @@ func (u *Usecase) GetAll(ctx context.Context) ([]Domain, error) {
 	return u.Repo.GetAll(ctx)
 }
 
-func (u *Usecase) GetByOrderId(ctx context.Context, orderId uint) ([]Domain, error) {
+func (u *Usecase) GetByOrderId(ctx context.Context, orderId uint) (Domain, error) {
 	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
 	defer cancel()
 
@@ -50,4 +50,11 @@ func (u *Usecase) Delete(ctx context.Context, id uint) error {
 	defer cancel()
 
 	return u.Repo.Delete(ctx, id)
+}
+
+func (u *Usecase) DeleteByOrderId(ctx context.Context, id uint) error {
+	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
+	defer cancel()
+
+	return u.Repo.DeleteByOrderId(ctx, id)
 }

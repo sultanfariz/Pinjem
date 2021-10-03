@@ -7,6 +7,7 @@ import (
 	_bookUsecase "Pinjem/businesses/books"
 	_depositUsecase "Pinjem/businesses/deposits"
 	_orderUsecase "Pinjem/businesses/orders"
+	_shippingDetailUsecase "Pinjem/businesses/shipping_details"
 	_userUsecase "Pinjem/businesses/users"
 	_authController "Pinjem/controllers/auth"
 	_bookOrderController "Pinjem/controllers/book_orders"
@@ -18,6 +19,7 @@ import (
 	_bookDb "Pinjem/drivers/databases/books"
 	_depositDb "Pinjem/drivers/databases/deposits"
 	_orderDb "Pinjem/drivers/databases/orders"
+	_shippingDetailDb "Pinjem/drivers/databases/shipping_details"
 	_userDb "Pinjem/drivers/databases/users"
 	postgres "Pinjem/drivers/postgresql"
 
@@ -45,7 +47,7 @@ func main() {
 		Database: os.Getenv("DB_DATABASE"),
 	}
 	Conn := configDB.InitDB()
-	Conn.Debug().AutoMigrate(&_userDb.Users{}, &_bookDb.Books{}, &_depositDb.Deposits{}, &_orderDb.Orders{}, &_bookOrderDb.BookOrders{})
+	Conn.Debug().AutoMigrate(&_userDb.Users{}, &_bookDb.Books{}, &_depositDb.Deposits{}, &_orderDb.Orders{}, &_bookOrderDb.BookOrders{}, _shippingDetailDb.ShippingDetails{})
 
 	timeoutContextEnv, _ := strconv.Atoi(os.Getenv("TIMEOUT_CONTEXT"))
 	timeoutContext := time.Duration(timeoutContextEnv) * time.Second
@@ -55,11 +57,12 @@ func main() {
 	depositUseCase := _depositUsecase.NewUsecase(_depositDb.NewDepositRepository(Conn), timeoutContext)
 	orderUseCase := _orderUsecase.NewUsecase(_orderDb.NewOrderRepository(Conn), timeoutContext)
 	bookOrderUseCase := _bookOrderUsecase.NewUsecase(_bookOrderDb.NewBookOrderRepository(Conn), timeoutContext)
+	shippingDetailUseCase := _shippingDetailUsecase.NewUsecase(_shippingDetailDb.NewShippingDetailRepository(Conn), timeoutContext)
 	authController := _authController.NewAuthController(*userUsecase, *depositUseCase)
 	userController := _userController.NewUserController(*userUsecase, *depositUseCase)
 	bookController := _bookController.NewBookController(*bookUseCase)
 	depositController := _depositController.NewDepositController(*depositUseCase)
-	orderController := _orderController.NewOrderController(*orderUseCase, *bookOrderUseCase, *bookUseCase, *depositUseCase)
+	orderController := _orderController.NewOrderController(*orderUseCase, *bookOrderUseCase, *bookUseCase, *depositUseCase, *shippingDetailUseCase)
 	bookOrderController := _bookOrderController.NewBookOrderController(*bookOrderUseCase)
 
 	// Routes

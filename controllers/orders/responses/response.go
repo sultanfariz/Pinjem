@@ -2,6 +2,7 @@ package responses
 
 import (
 	"Pinjem/businesses/orders"
+	"Pinjem/businesses/shipping_details"
 	"time"
 )
 
@@ -23,22 +24,22 @@ type OrderResponse struct {
 	UpdatedAt      time.Time `json:"updatedAt"`
 }
 
-func FromDomain(domain orders.Domain, bookIds []string) OrderResponse {
+func FromDomain(orderDomain orders.Domain, shipppingDetailDomain shipping_details.Domain, bookIds []string) OrderResponse {
 	return OrderResponse{
-		ID:             domain.Id,
-		UserId:         domain.UserId,
-		OrderDate:      domain.OrderDate,
-		ExpDate:        domain.ExpDate,
+		ID:             orderDomain.Id,
+		UserId:         orderDomain.UserId,
+		OrderDate:      orderDomain.OrderDate,
+		ExpDate:        orderDomain.ExpDate,
 		BookId:         bookIds,
-		DestProvinsi:   domain.DestProvinsi,
-		DestKota:       domain.DestKota,
-		DestKecamatan:  domain.DestKecamatan,
-		DestDesa:       domain.DestDesa,
-		DestAddress:    domain.DestAddress,
-		DestPostalCode: domain.DestPostalCode,
-		ShippingCost:   domain.ShippingCost,
-		Status:         domain.Status,
-		CreatedAt:      domain.CreatedAt,
-		UpdatedAt:      domain.UpdatedAt,
+		DestProvinsi:   shipppingDetailDomain.DestProvinsi,
+		DestKota:       shipppingDetailDomain.DestKota,
+		DestKecamatan:  shipppingDetailDomain.DestKecamatan,
+		DestDesa:       shipppingDetailDomain.DestDesa,
+		DestAddress:    shipppingDetailDomain.DestAddress,
+		DestPostalCode: shipppingDetailDomain.DestPostalCode,
+		ShippingCost:   shipppingDetailDomain.ShippingCost,
+		Status:         orderDomain.Status,
+		CreatedAt:      orderDomain.CreatedAt,
+		UpdatedAt:      orderDomain.UpdatedAt,
 	}
 }

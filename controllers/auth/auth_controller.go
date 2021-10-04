@@ -57,6 +57,13 @@ func (a *AuthController) Register(c echo.Context) error {
 	userRegister := requests.RegisterRequest{}
 	c.Bind(&userRegister)
 
+	// check if email is already registered
+	ctx := c.Request().Context()
+	user, _ := a.Usecase.FindByEmail(ctx, userRegister.Email)
+	if user.Id != 0 {
+		return controllers.ErrorResponse(c, http.StatusBadRequest, exceptions.ErrUserAlreadyExists)
+	}
+
 	// upload file KTP
 	file, err := c.FormFile("ktp")
 	if err != nil {
@@ -90,9 +97,7 @@ func (a *AuthController) Register(c echo.Context) error {
 		LinkKTP:     fileURL,
 	}
 
-	ctx := c.Request().Context()
-
-	user, err := a.Usecase.Register(ctx, userDomain)
+	user, err = a.Usecase.Register(ctx, userDomain)
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}

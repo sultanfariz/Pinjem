@@ -97,11 +97,11 @@ func (a *AuthController) Register(c echo.Context) error {
 	}
 
 	user, err = a.Usecase.Register(ctx, userDomain)
+	if user.Id == 0 || err == exceptions.ErrValidationFailed {
+		return controllers.ErrorResponse(c, http.StatusUnauthorized, exceptions.ErrInvalidCredentials)
+	}
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
-	}
-	if user.Id == 0 {
-		return controllers.ErrorResponse(c, http.StatusUnauthorized, exceptions.ErrInvalidCredentials)
 	}
 
 	// create deposit for user role

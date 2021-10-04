@@ -4,8 +4,6 @@ import (
 	"Pinjem/businesses/users"
 	"Pinjem/businesses/users/mocks"
 	"context"
-	"log"
-	"reflect"
 	"testing"
 	"time"
 
@@ -20,9 +18,6 @@ var userDomain users.Domain
 
 func setup() {
 	userService = users.NewUsecase(&userRepository, time.Minute*15)
-	log.Println("---------------------------------------------")
-	log.Println(reflect.TypeOf(userService))
-	log.Println("---------------------------------------------")
 	userDomain = users.Domain{
 		Id:          1,
 		Fullname:    "John Doe",
@@ -104,12 +99,16 @@ func TestCreate(t *testing.T) {
 func TestFindUserByEmail(t *testing.T) {
 	setup()
 	userRepository.On("FindByEmail", mock.Anything, mock.AnythingOfType("string")).Return(userDomain, nil).Once()
-	t.Run("Test Case 1 | Find User By Email", func(t *testing.T) {
-		// user, err := userService.FindByEmail(context.Background(), userDomain.Email)
-		_, err := userService.FindByEmail(context.Background(), userDomain.Email)
+	t.Run("Test Case 1 | Valid Find User By Email", func(t *testing.T) {
+		user, err := userService.FindByEmail(context.Background(), userDomain.Email)
 
 		assert.Nil(t, err)
-		// assert.Equal(t, userDomain.Fullname, user.Fullname)
+		assert.Equal(t, userDomain.Fullname, user.Fullname)
+	})
+	t.Run("Test Case 2 | Invalid Find User By Email with Empty Email Field", func(t *testing.T) {
+		_, err := userService.FindByEmail(context.Background(), "")
+
+		assert.NotNil(t, err)
 	})
 }
 
@@ -117,21 +116,20 @@ func TestGetAllUsers(t *testing.T) {
 	setup()
 	userRepository.On("GetAll", mock.Anything).Return([]users.Domain{userDomain}, nil).Once()
 	t.Run("Test Case 1 | Get All Users", func(t *testing.T) {
-		// users, err := userService.GetAll(context.Background())
-		_, err := userService.GetAll(context.Background())
+		users, err := userService.GetAll(context.Background())
 
 		assert.Nil(t, err)
-		// assert.Equal(t, userDomain.Fullname, users[0].Fullname)
+		assert.Equal(t, userDomain.Fullname, users[0].Fullname)
 	})
 }
 
-func TestGetById(t *testing.T) {
+func TestGetUserById(t *testing.T) {
 	setup()
 	userRepository.On("GetById", mock.Anything, mock.AnythingOfType("uint")).Return(userDomain, nil).Once()
 	t.Run("Test Case 1 | Get User By Id", func(t *testing.T) {
-		_, err := userService.GetById(context.Background(), 1)
+		user, err := userService.GetById(context.Background(), 1)
 
 		assert.Nil(t, err)
-		// assert.Equal(t, userDomain.Fullname, user.Fullname)
+		assert.Equal(t, userDomain.Fullname, user.Fullname)
 	})
 }

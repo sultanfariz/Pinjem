@@ -5,6 +5,8 @@ import (
 
 	context "context"
 	"time"
+
+	"github.com/go-playground/validator/v10"
 )
 
 type Usecase struct {
@@ -27,21 +29,21 @@ func NewUsecase(repo DomainRepository, timeout time.Duration) *Usecase {
 }
 
 func (u *Usecase) Login(ctx context.Context, email, password string) (Domain, error) {
-	if email == "" || password == "" {
+	validate := validator.New()
+	err := validate.Struct(LoginDomain{Email: email, Password: password})
+	if err != nil {
 		return Domain{}, exceptions.ErrInvalidCredentials
 	}
-	// ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
-	// defer cancel()
 
 	return u.Repo.Login(ctx, email, password)
 }
 
 func (u *Usecase) Register(ctx context.Context, domain Domain) (Domain, error) {
-	if domain.Email == "" || domain.Password == "" {
-		return Domain{}, exceptions.ErrInvalidCredentials
+	validate := validator.New()
+	err := validate.Struct(domain)
+	if err != nil {
+		return Domain{}, exceptions.ErrValidationFailed
 	}
-	// ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
-	// defer cancel()
 
 	return u.Repo.Create(ctx, domain)
 }

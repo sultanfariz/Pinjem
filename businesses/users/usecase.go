@@ -12,6 +12,13 @@ type Usecase struct {
 	ContextTimeout time.Duration
 }
 
+func NewUsecaseTest(repo DomainRepository) Usecase {
+	return Usecase{
+		Repo:           repo,
+		ContextTimeout: time.Hour * 1,
+	}
+}
+
 func NewUsecase(repo DomainRepository, timeout time.Duration) *Usecase {
 	return &Usecase{
 		Repo:           repo,

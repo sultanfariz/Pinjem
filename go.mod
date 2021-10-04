@@ -10,6 +10,8 @@ require (
 	github.com/jcmturner/gokrb5/v8 v8.2.0 // indirect
 	github.com/joho/godotenv v1.3.0 // indirect
 	github.com/labstack/echo/v4 v4.6.0 // indirect
+	github.com/stretchr/testify v1.7.0 // indirect
+	github.com/vektra/mockery/v2 v2.9.4 // indirect
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/net v0.0.0-20210924054057-cf34111cab4d // indirect
 	golang.org/x/sys v0.0.0-20210923061019-b8560ed6a9b7 // indirect

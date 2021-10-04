@@ -44,6 +44,6 @@ type DomainService interface {
 	Create(ctx context.Context, domain Domain) (Domain, error)
 	// Update(ctx context.Context, domain Domain) (Domain, error)
 	// Delete(ctx context.Context, id uint) (Domain, error)
-	Login(ctx context.Context, domain Domain) (Domain, error)
+	Login(ctx context.Context, email string, password string) (Domain, error)
 	FindByEmail(ctx context.Context, email string) (Domain, error)
 }

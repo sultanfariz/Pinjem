@@ -69,7 +69,6 @@ func (a *AuthController) Register(c echo.Context) error {
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
-
 	split := strings.Split(file.Filename, ".")
 	extension := split[len(split)-1]
 	fileName := strings.ReplaceAll(fmt.Sprintf("KTP_%s", userRegister.Fullname), " ", "_")

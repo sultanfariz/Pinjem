@@ -44,4 +44,4 @@
 
 ## API Postman Docs
 
-![Link](https://documenter.getpostman.com/view/14458184/UUy4e66j)
+https://documenter.getpostman.com/view/14458184/UUy4e66j

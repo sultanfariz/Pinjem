@@ -24,18 +24,18 @@ import (
 // }
 type Domain struct {
 	Id            uint
-	BookId        string
-	ISBN          string
-	Publisher     string
-	PublishDate   string
-	Title         string
-	Authors       string
-	Description   string
-	Language      string
-	Picture       string
-	NumberOfPages uint
-	MinDeposit    uint
-	Status        bool
+	BookId        string `validate:"required"`
+	ISBN          string `validate:"required"`
+	Publisher     string `validate:"required"`
+	PublishDate   string `validate:"required"`
+	Title         string `validate:"required"`
+	Authors       string `validate:"required"`
+	Description   string `validate:"required"`
+	Language      string `validate:"required"`
+	Picture       string `validate:"required"`
+	NumberOfPages uint   `validate:"required"`
+	MinDeposit    uint   `validate:"required"`
+	Status        bool   `validate:"required"`
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	DeletedAt     time.Time

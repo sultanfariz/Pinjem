@@ -48,7 +48,6 @@ func (u *Usecase) Create(ctx context.Context, domain Domain) (Domain, error) {
 func (u *Usecase) DeleteByOrderId(ctx context.Context, id uint) error {
 	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
 	defer cancel()
-	// log.Println("---------------------------------------------------")
 
 	return u.Repo.DeleteByOrderId(ctx, id)
 }

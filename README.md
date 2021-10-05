@@ -7,10 +7,12 @@
     <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/sultanfariz/Pinjem?style=for-the-badge">
 </div>
 
-| [Ruang Lingkup Pengembangan](#ruang-lingkup-pengembangan) | [Entity Relationship Diagram](#entity-relationship-diagram) | [Architectural Patterm](#architectural-pattern) | [API Postman Docs](#api-postman-docs) |
-| :-------------------------------------------------------: | :---------------------------------------------------------: | :---------------------------------------------: | :-----------------------------------: |
+| [Ruang Lingkup Pengembangan](#ruang-lingkup-pengembangan) | [Entity Relationship Diagram](#entity-relationship-diagram) | [Architectural Patterm](#architectural-pattern) | [Unit Testing](#unit-testing) | [API Postman Docs](#api-postman-docs) |
+| :-------------------------------------------------------: | :---------------------------------------------------------: | :---------------------------------------------: | :---------------------------: | ------------------------------------- |
 
 ## Ruang Lingkup Pengembangan
+
+[`^ kembali ke atas ^`](#)
 
 **Hardware :**
 
@@ -38,10 +40,37 @@
 
 ## Entity Relationship Diagram
 
-![ERD](./assets/Pinjemin! - Fix ERD.png)
+[`^ kembali ke atas ^`](#)
+
+![ERD](./assets/Pinjemin!-FixERD.png)
 
 ## Architectural Pattern
 
+[`^ kembali ke atas ^`](#)
+
+## Unit Testing
+
+[`^ kembali ke atas ^`](#)
+
+Hasil dari unit test yang telah dilakukan menunjukkan rerata nilai coverage yang berada di atas 80% pada tiap domain bisnis yang ada (6 domain bisnis).
+
+```
+ok  	Pinjem/businesses/book_orders	(cached)	coverage: 81.2% of statements
+?   	Pinjem/businesses/book_orders/mocks	[no test files]
+ok  	Pinjem/businesses/books	(cached)	coverage: 100.0% of statements
+?   	Pinjem/businesses/books/mocks	[no test files]
+ok  	Pinjem/businesses/deposits	(cached)	coverage: 81.2% of statements
+?   	Pinjem/businesses/deposits/mocks	[no test files]
+ok  	Pinjem/businesses/orders	(cached)	coverage: 84.2% of statements
+?   	Pinjem/businesses/orders/mocks	[no test files]
+ok  	Pinjem/businesses/shipping_details	(cached)	coverage: 100.0% of statements
+?   	Pinjem/businesses/shipping_details/mocks	[no test files]
+ok  	Pinjem/businesses/users	(cached)	coverage: 94.1% of statements
+?   	Pinjem/businesses/users/mocks	[no test files]
+```
+
 ## API Postman Docs
+
+[`^ kembali ke atas ^`](#)
 
 https://documenter.getpostman.com/view/14458184/UUy4e66j

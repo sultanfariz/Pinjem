@@ -23,7 +23,7 @@ func setup() {
 		Fullname:    "John Doe",
 		Email:       "johndoe@gmail.com",
 		Password:    "12345678",
-		Nik:         "123456789",
+		Nik:         "1234567891011121",
 		PhoneNumber: "08123456789",
 		Address:     "Jl. Kebon Jeruk No. 1",
 		Birthdate:   "1990-01-01",

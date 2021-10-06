@@ -172,43 +172,6 @@ paths:
                   success: false
                   message: internal server error
                   data: null
-  /users/{userId}:
-    description: Update user detail
-    parameters:
-      - name: userId
-        in: path
-        description: user id
-        required: true
-        allowEmptyValue: false
-        schema:
-          type: string
-    put:
-      tags:
-        - User
-      security:
-        - cookieToken: []
-      requestBody:
-        required: true
-        description: Request body for update user
-        content:
-          "application/json":
-            schema:
-              $ref: "#/components/schemas/update-user"
-            examples:
-              update-user:
-                $ref: "#/components/examples/update-user"
-      responses:
-        "200":
-          description: Update user detail success
-          content:
-            application/json:
-              example:
-                status: 200
-                success: true
-                message: Success
-                data:
-                  id: 1
-                  email:
   /uploads/{file}:
     description: Get uploaded file
     parameters:
@@ -473,58 +436,6 @@ paths:
                 success: false
                 message: internal server error
                 data: null
-  /orders/{orderId}:
-    description: Get order detail
-    parameters:
-      - name: orderId
-        in: path
-        description: order id
-        required: true
-        allowEmptyValue: false
-        schema:
-          type: integer
-    get:
-      tags:
-        - Order
-      security:
-        - cookieToken: []
-      responses:
-        "200":
-          description: Get order detail success
-          content:
-            application/json:
-              examples:
-                order:
-                  $ref: "#/components/examples/order"
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              examples:
-                status: 500
-                success: false
-                message: internal server error
-                data: null
-  /orders/{orderId}/cancel:
-    description: Cancel order
-    parameters:
-      - name: orderId
-        in: path
-        description: order id
-        required: true
-        allowEmptyValue: false
-        schema:
-          type: integer
-    post:
-      tags:
-        - Order
-      security:
-        - cookieToken: []
-      responses:
-        "200":
-          description: Cancel order success
-          content:
-      
   /orders/my:
     description: Get my orders
     get:

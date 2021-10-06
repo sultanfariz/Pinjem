@@ -7,8 +7,8 @@
     <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/sultanfariz/Pinjem?style=for-the-badge">
 </div>
 
-| [Ruang Lingkup Pengembangan](#ruang-lingkup-pengembangan) | [Entity Relationship Diagram](#entity-relationship-diagram) | [Architectural Patterm](#architectural-pattern) | [Unit Testing](#unit-testing) | [API Postman Docs](#api-postman-docs) |
-| :-------------------------------------------------------: | :---------------------------------------------------------: | :---------------------------------------------: | :---------------------------: | ------------------------------------- |
+| [Ruang Lingkup Pengembangan](#ruang-lingkup-pengembangan) | [Entity Relationship Diagram](#entity-relationship-diagram) | [Architectural Patterm](#architectural-pattern) | [Unit Testing](#unit-testing) | [API Postman Docs](#api-postman-docs) | [Swagger OpenAPI Docs](#swagger-openapi-docs) |
+| :-------------------------------------------------------: | :---------------------------------------------------------: | :---------------------------------------------: | :---------------------------: | ------------------------------------- | --------------------------------------------- |
 
 ## Ruang Lingkup Pengembangan
 
@@ -20,15 +20,17 @@
 - AMD Ryzen 5 2500u
 - RAM 4GB DDR4
 - AMD Radeon Vega Graphics
-- 1000TB 128SSD
+- 1TB HDD 128GB SSD
 ```
 
 **Software :**
 
 ```
-- MySQL
+- MySQL + GORM
 - Echo Go
 - Docker
+- Postman
+- Swagger
 - Visual Studio Code
 ```
 
@@ -47,6 +49,8 @@
 ## Architectural Pattern
 
 [`^ kembali ke atas ^`](#)
+
+![Clean Architecture](./assets/CleanArch.png)
 
 ## Unit Testing
 
@@ -74,3 +78,9 @@ ok  	Pinjem/businesses/users	(cached)	coverage: 94.1% of statements
 [`^ kembali ke atas ^`](#)
 
 https://documenter.getpostman.com/view/14458184/UUy4e66j
+
+## Swagger OpenAPI Docs
+
+[`^ kembali ke atas ^`](#)
+
+https://app.swaggerhub.com/apis/sultanfariz/Pinjem/1.0.0

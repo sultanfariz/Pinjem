@@ -409,6 +409,270 @@ paths:
                 success: false
                 message: internal server error
                 data: null
+  /orders:
+    description: Get all orders
+    get:
+      tags:
+        - Order
+      security:
+        - cookieToken: []
+      responses:
+        "200":
+          description: Get all orders success
+          content:
+            application/json:
+              examples:
+                orders:
+                  $ref: "#/components/examples/orders"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                status: 500
+                success: false
+                message: internal server error
+                data: null
+    post:
+      tags:
+        - Order
+      security:
+        - cookieToken: []
+      requestBody:
+        required: true
+        description: Request body for create order
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/create-order"
+            examples:
+              create-order:
+                $ref: "#/components/examples/create-order"
+      responses:
+        "200":
+          description: Create order success
+          content:
+            application/json:
+              example:
+                status: 200
+                success: true
+                message: Success
+                data:
+                  status: 200
+                  success: true
+                  message: Success
+                  data:
+                    order:
+                      $ref: "#/components/examples/order"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                status: 500
+                success: false
+                message: internal server error
+                data: null
+  /orders/{orderId}:
+    description: Get order detail
+    parameters:
+      - name: orderId
+        in: path
+        description: order id
+        required: true
+        allowEmptyValue: false
+        schema:
+          type: integer
+    get:
+      tags:
+        - Order
+      security:
+        - cookieToken: []
+      responses:
+        "200":
+          description: Get order detail success
+          content:
+            application/json:
+              examples:
+                order:
+                  $ref: "#/components/examples/order"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                status: 500
+                success: false
+                message: internal server error
+                data: null
+  /orders/{orderId}/cancel:
+    description: Cancel order
+    parameters:
+      - name: orderId
+        in: path
+        description: order id
+        required: true
+        allowEmptyValue: false
+        schema:
+          type: integer
+    post:
+      tags:
+        - Order
+      security:
+        - cookieToken: []
+      responses:
+        "200":
+          description: Cancel order success
+          content:
+      
+  /orders/my:
+    description: Get my orders
+    get:
+      tags:
+        - Order
+      security:
+        - cookieToken: []
+      responses:
+        "200":
+          description: Get my orders success
+          content:
+            application/json:
+              examples:
+                orders:
+                  $ref: "#/components/examples/orders"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                status: 500
+                success: false
+                message: internal server error
+                data: null
+  /orders/{orderId}:
+    description: Get order detail
+    parameters:
+      - name: orderId
+        in: path
+        description: order id
+        required: true
+        allowEmptyValue: false
+        schema:
+          type: integer
+    get:
+      tags:
+        - Order
+      security:
+        - cookieToken: []
+      responses:
+        "200":
+          description: Get order detail success
+          content:
+            application/json:
+              examples:
+                status: 200
+                success: true
+                message: Success
+                data:
+                  order:
+                    $ref: "#/components/examples/order"
+        "400":
+          description: Order not found
+          content:
+            application/json:
+              examples:
+                status: 400
+                success: false
+                message: Order not found
+                data: null
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                status: 500
+                success: false
+                message: internal server error
+                data: null
+    patch:
+      tags:
+        - Order
+      security:
+        - cookieToken: []
+      requestBody:
+        required: true
+        description: Request body for update order
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/update-order"
+            examples:
+              update-order:
+                $ref: "#/components/examples/update-order"
+      responses:
+        "200":
+          description: Update order success
+          content:
+            application/json:
+              example:
+                status: 200
+                success: true
+                message: Success
+                data:
+                  order:
+                    $ref: "#/components/examples/order"
+        "400":
+          description: Order not found
+          content:
+            application/json:
+              examples:
+                status: 400
+                success: false
+                message: Order not found
+                data: null
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                status: 500
+                success: false
+                message: internal server error
+                data: null
+    delete:
+      tags:
+        - Order
+      security:
+        - cookieToken: []
+      responses:
+        "200":
+          description: Delete order success
+          content:
+            application/json:
+              example:
+                status: 200
+                success: true
+                message: Success
+                data: null
+        "400":
+          description: Order not found
+          content:
+            application/json:
+              examples:
+                status: 400
+                success: false
+                message: Order not found
+                data: null
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                status: 500
+                success: false
+                message: internal server error
+                data: null
+# $ref: "#/components/responses/internalServerError"
 # # components
 # components:
 #   securitySchemes:

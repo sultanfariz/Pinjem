@@ -115,6 +115,9 @@ func (o *OrderController) GetById(c echo.Context) error {
 	orderIdInt, _ := (strconv.Atoi(orderIdParam))
 	orderId := uint(orderIdInt)
 	order, err := o.Usecase.GetById(ctx, orderId)
+	if order.Id == 0 {
+		return controllers.ErrorResponse(c, http.StatusBadRequest, exceptions.ErrOrderNotFound)
+	}
 	if err != nil {
 		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}

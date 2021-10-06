@@ -103,7 +103,7 @@ func AdminRoleValidation(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(e echo.Context) error {
 		role, err := ExtractJWTPayloadRole(e)
 		if err != nil {
-			return err
+			return echo.ErrUnauthorized
 		}
 		if role == "admin" {
 			return next(e)
@@ -116,7 +116,7 @@ func UserRoleValidation(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(e echo.Context) error {
 		role, err := ExtractJWTPayloadRole(e)
 		if err != nil {
-			return err
+			return echo.ErrUnauthorized
 		}
 		if role == "user" {
 			return next(e)
@@ -128,7 +128,10 @@ func UserRoleValidation(next echo.HandlerFunc) echo.HandlerFunc {
 func ExtractJWTPayloadRole(c echo.Context) (string, error) {
 	header := c.Request().Header.Clone().Get("Authorization")
 	token := strings.Split(header, "Bearer ")[1]
-	claims, _ := sjwt.Parse(token)
+	claims, err := sjwt.Parse(token)
+	if err != nil {
+		return "", err
+	}
 	return claims["role"].(string), nil
 }
 

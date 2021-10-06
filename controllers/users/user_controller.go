@@ -5,6 +5,7 @@ import (
 	"Pinjem/businesses/users"
 	"Pinjem/controllers"
 	"Pinjem/controllers/auth/responses"
+	"Pinjem/exceptions"
 	"Pinjem/helpers"
 	"net/http"
 	"strconv"
@@ -29,7 +30,7 @@ func (u *UserController) GetAll(c echo.Context) error {
 
 	users, err := u.Usecase.GetAll(ctx)
 	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 
 	response := make([]responses.UserResponse, len(users))
@@ -64,7 +65,7 @@ func (u *UserController) GetById(c echo.Context) error {
 	id := uint(idInt)
 	user, err := u.Usecase.GetById(ctx, id)
 	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 
 	response := responses.UserResponse{
@@ -94,18 +95,18 @@ func (u *UserController) GetMyUserProfile(c echo.Context) error {
 
 	userId, err := helpers.ExtractJWTPayloadUserId(c)
 	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 
 	id := uint(userId)
 	user, err := u.Usecase.GetById(ctx, id)
 	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 
 	deposit, err := u.DepositUsecase.GetByUserId(ctx, id)
 	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 
 	response := responses.MyProfileResponse{

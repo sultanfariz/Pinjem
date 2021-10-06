@@ -36,17 +36,17 @@ func (a *AuthController) Login(c echo.Context) error {
 
 	// check email and password
 	user, err := a.Usecase.Login(ctx, userLogin.Email, userLogin.Password)
-	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
-	}
 	if user.Id == 0 {
 		return controllers.ErrorResponse(c, http.StatusUnauthorized, exceptions.ErrInvalidCredentials)
+	}
+	if err != nil {
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 
 	// generate token and cookie
 	token, err := helpers.GenerateToken(int(user.Id), user.Role)
 	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 	expirationTime := time.Now().Add(time.Hour * 24)
 	helpers.SetTokenCookie("token", token, expirationTime, c)
@@ -57,12 +57,18 @@ func (a *AuthController) Register(c echo.Context) error {
 	userRegister := requests.RegisterRequest{}
 	c.Bind(&userRegister)
 
+	// check if email is already registered
+	ctx := c.Request().Context()
+	user, _ := a.Usecase.FindByEmail(ctx, userRegister.Email)
+	if user.Id != 0 {
+		return controllers.ErrorResponse(c, http.StatusBadRequest, exceptions.ErrUserAlreadyExists)
+	}
+
 	// upload file KTP
 	file, err := c.FormFile("ktp")
 	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
-
 	split := strings.Split(file.Filename, ".")
 	extension := split[len(split)-1]
 	fileName := strings.ReplaceAll(fmt.Sprintf("KTP_%s", userRegister.Fullname), " ", "_")
@@ -90,14 +96,12 @@ func (a *AuthController) Register(c echo.Context) error {
 		LinkKTP:     fileURL,
 	}
 
-	ctx := c.Request().Context()
-
-	user, err := a.Usecase.Register(ctx, userDomain)
-	if err != nil {
-		return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
-	}
-	if user.Id == 0 {
+	user, err = a.Usecase.Register(ctx, userDomain)
+	if user.Id == 0 || err == exceptions.ErrValidationFailed {
 		return controllers.ErrorResponse(c, http.StatusUnauthorized, exceptions.ErrInvalidCredentials)
+	}
+	if err != nil {
+		return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 	}
 
 	// create deposit for user role
@@ -108,7 +112,7 @@ func (a *AuthController) Register(c echo.Context) error {
 		}
 		_, err := a.DepositUsecase.Create(ctx, depositDomain)
 		if err != nil {
-			return controllers.ErrorResponse(c, http.StatusInternalServerError, err)
+			return controllers.ErrorResponse(c, http.StatusInternalServerError, exceptions.ErrInternalServerError)
 		}
 	}
 

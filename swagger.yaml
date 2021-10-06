@@ -1,0 +1,701 @@
+openapi: "3.0.0"
+info:
+  title: Pinjem RESTful API
+  version: 1.0.0
+  description: Pinjem RESTful API Documentation
+  contact:
+    name: Sultan Fariz
+    email: sultanfariz00@gmail.com
+servers:
+  - url: https://api.server/api/v1
+paths:
+  # user
+  /register:
+    description: Register user
+    post:
+      tags:
+        - User
+        - Authentication
+      description: Register new user
+      requestBody:
+        required: true
+        description: Request body for register
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/register"
+            examples:
+              register:
+                $ref: "#/components/examples/register"
+      responses:
+        "201":
+          description: Create user success
+          content:
+            application/json:
+              example:
+                status: 200
+                success: true
+                messages: Success
+                data:
+                  id: 1
+                  email: sultan@gmail.com
+                  fullname: Sultan Fariz
+                  nik: 1234567890112233
+                  phoneNumber: 08123456789
+                  birthdate: 2001-01-01
+                  address: Jl. Kebon Jeruk No. 1
+                  provinsi: Jawa Barat
+                  kota: Bandung
+                  kecamatan: Kebon Jeruk
+                  desa: Kebon Jeruk
+                  postalCode: 40132
+                  role: user
+                  status: 1
+                  linkKTP: http://localhost:8080/api/v1/uploads/KTP/KTP_Sultan_20210929161247.jpg
+                  createdAt: 2020-01-01T00:00:00.000Z
+                  updatedAt: 2020-01-01T00:00:00.000Z
+        "500":
+          $ref: "#/components/responses/internalServerError"
+  /login:
+    description: Login user
+    post:
+      tags:
+        - User
+        - Authentication
+      description: Login user
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/login"
+            examples:
+              login:
+                $ref: "#/components/examples/login"
+      responses:
+        "200":
+          description: Login success
+          content:
+            application/json:
+              example:
+                status: 200
+                success: true
+                message: Success
+                data:
+                  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJyb2xlIjoidXNlciIsImV4cCI6MTY0MjEyMjc5Nn0.CN2J3FCBUSImJzfJyT-RH3Sf_B-ri-MXdMJUyDJZNBI
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              examples:
+                status: 401
+                success: false
+                message: invalid credentials
+                data: null
+  /users:
+    description: Get all user
+    get:
+      tags:
+        - User
+      security:
+        - cookieToken: []
+      responses:
+        "200":
+          description: Get all user success
+          content:
+            application/json:
+              examples:
+                users:
+                  $ref: "#/components/examples/users"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              examples:
+                status: 401
+                success: false
+                message: unauthorized
+                data: null
+  /users/{userId}:
+    description: Get user detail
+    parameters:
+      - name: userId
+        in: path
+        description: user id
+        required: true
+        allowEmptyValue: false
+        schema:
+          type: int
+    get:
+      tags:
+        - User
+      security:
+        - cookieToken: []
+      responses:
+        "200":
+          description: Get specific user success
+          content:
+            application/json:
+              examples:
+                user:
+                  $ref: "#/components/examples/user"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              examples:
+                status: 401
+                success: false
+                message: unauthorized
+                data: null
+    /users/my:
+      description: Get user detail
+      get:
+        tags:
+          - User
+        security:
+          - cookieToken: []
+        responses:
+          "200":
+            description: Get user detail success
+            content:
+              application/json:
+                examples:
+                  user:
+                    $ref: "#/components/examples/my-profile"
+          "500":
+            description: Internal server error
+            content:
+              application/json:
+                examples:
+                  status: 500
+                  success: false
+                  message: internal server error
+                  data: null
+  /uploads/{file}:
+    description: Get uploaded file
+    parameters:
+      - name: file
+        in: path
+        description: file name
+        required: true
+        allowEmptyValue: false
+        schema:
+          type: string
+    get:
+      tags:
+        - Upload
+      security:
+        - cookieToken: []
+      responses:
+        "200":
+          description: Get uploaded file success
+          content:
+            application/json:
+              example:
+                file
+        "404":
+          description: File not found
+          content:
+            application/json:
+              examples:
+                message: Not found
+  /books:
+    description: Get all books
+    get:
+      tags:
+        - Book
+      responses:
+        "200":
+          description: Get all books success
+          content:
+            application/json:
+              examples:
+                status: 200
+                success: true
+                message: Success
+                data:
+                  books:
+                    $ref: "#/components/examples/books"
+    post:
+      tags:
+        - Book
+      security:
+        - cookieToken: []
+      requestBody:
+        required: true
+        description: Request body for create book
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/create-book"
+            examples:
+              create-book:
+                $ref: "#/components/examples/create-book"
+      responses:
+        "200":
+          description: Create book success
+          content:
+            application/json:
+              example:
+                status: 200
+                success: true
+                message: Success
+                data:
+                  book:
+                    $ref: "#/components/examples/book"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                status: 500
+                success: false
+                message: internal server error
+                data: null
+  /books/{bookId}:
+    description: Get book detail
+    parameters:
+      - name: bookId
+        in: path
+        description: book id
+        required: true
+        allowEmptyValue: false
+        schema:
+          type: string
+    get:
+      tags:
+        - Book
+      responses:
+        "200":
+          description: Get book detail success
+          content:
+            application/json:
+              examples:
+                book:
+                  $ref: "#/components/examples/book"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                status: 500
+                success: false
+                message: internal server error
+                data: null
+  /deposits:
+    description: Get all deposits
+    get:
+      tags:
+        - Deposit
+      security:
+        - cookieToken: []
+      responses:
+        "200":
+          description: Get all deposits success
+          content:
+            application/json:
+              examples:
+                deposits:
+                  $ref: "#/components/examples/deposits"
+  /deposits/{userId}:
+    description: Get deposit by user id
+    parameters:
+      - name: userId
+        in: path
+        description: user id
+        required: true
+        allowEmptyValue: false
+        schema:
+          type: integer
+    get:
+      tags:
+        - Deposit
+      security:
+        - cookieToken: []
+      responses:
+        "200":
+          description: Get deposit detail success
+          content:
+            application/json:
+              examples:
+                status: 200
+                success: true
+                message: Success
+                data:
+                  deposits:
+                    $ref: "#/components/examples/deposits"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                status: 500
+                success: false
+                message: internal server error
+                data: null
+  /deposits/my:
+    description: Top up my deposit balance
+    post:
+      tags:
+        - Deposit
+      security:
+        - cookieToken: []
+      requestBody:
+        required: true
+        description: Request body for top up deposit
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/top-up-deposit"
+            examples:
+              top-up-deposit:
+                $ref: "#/components/examples/top-up-deposit"
+      responses:
+        "200":
+          description: Top up deposit success
+          content:
+            application/json:
+              example:
+                status: 200
+                success: true
+                message: Success
+                data:
+                  deposit:
+                    $ref: "#/components/examples/deposit"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                status: 500
+                success: false
+                message: internal server error
+                data: null
+  /orders:
+    description: Get all orders
+    get:
+      tags:
+        - Order
+      security:
+        - cookieToken: []
+      responses:
+        "200":
+          description: Get all orders success
+          content:
+            application/json:
+              examples:
+                orders:
+                  $ref: "#/components/examples/orders"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                status: 500
+                success: false
+                message: internal server error
+                data: null
+    post:
+      tags:
+        - Order
+      security:
+        - cookieToken: []
+      requestBody:
+        required: true
+        description: Request body for create order
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/create-order"
+            examples:
+              create-order:
+                $ref: "#/components/examples/create-order"
+      responses:
+        "200":
+          description: Create order success
+          content:
+            application/json:
+              example:
+                status: 200
+                success: true
+                message: Success
+                data:
+                  status: 200
+                  success: true
+                  message: Success
+                  data:
+                    order:
+                      $ref: "#/components/examples/order"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                status: 500
+                success: false
+                message: internal server error
+                data: null
+  /orders/my:
+    description: Get my orders
+    get:
+      tags:
+        - Order
+      security:
+        - cookieToken: []
+      responses:
+        "200":
+          description: Get my orders success
+          content:
+            application/json:
+              examples:
+                orders:
+                  $ref: "#/components/examples/orders"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                status: 500
+                success: false
+                message: internal server error
+                data: null
+  /orders/{orderId}:
+    description: Get order detail
+    parameters:
+      - name: orderId
+        in: path
+        description: order id
+        required: true
+        allowEmptyValue: false
+        schema:
+          type: integer
+    get:
+      tags:
+        - Order
+      security:
+        - cookieToken: []
+      responses:
+        "200":
+          description: Get order detail success
+          content:
+            application/json:
+              examples:
+                status: 200
+                success: true
+                message: Success
+                data:
+                  order:
+                    $ref: "#/components/examples/order"
+        "400":
+          description: Order not found
+          content:
+            application/json:
+              examples:
+                status: 400
+                success: false
+                message: Order not found
+                data: null
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                status: 500
+                success: false
+                message: internal server error
+                data: null
+    patch:
+      tags:
+        - Order
+      security:
+        - cookieToken: []
+      requestBody:
+        required: true
+        description: Request body for update order
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/update-order"
+            examples:
+              update-order:
+                $ref: "#/components/examples/update-order"
+      responses:
+        "200":
+          description: Update order success
+          content:
+            application/json:
+              example:
+                status: 200
+                success: true
+                message: Success
+                data:
+                  order:
+                    $ref: "#/components/examples/order"
+        "400":
+          description: Order not found
+          content:
+            application/json:
+              examples:
+                status: 400
+                success: false
+                message: Order not found
+                data: null
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                status: 500
+                success: false
+                message: internal server error
+                data: null
+    delete:
+      tags:
+        - Order
+      security:
+        - cookieToken: []
+      responses:
+        "200":
+          description: Delete order success
+          content:
+            application/json:
+              example:
+                status: 200
+                success: true
+                message: Success
+                data: null
+        "400":
+          description: Order not found
+          content:
+            application/json:
+              examples:
+                status: 400
+                success: false
+                message: Order not found
+                data: null
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                status: 500
+                success: false
+                message: internal server error
+                data: null
+# $ref: "#/components/responses/internalServerError"
+# # components
+# components:
+#   securitySchemes:
+#     cookieToken:
+#       type: apiKey
+#       in: cookie
+#       description: Authentication user security
+#       name: token
+#   schemas:
+#     register:
+#       type: object
+#       properties:
+#         name:
+#           type: string
+#         email:
+#           type: string
+#         password:
+#           type: string
+#         phone_number:
+#           type: string
+#         brithday:
+#           type: string
+#       required:
+#         - name
+#         - email
+#         - password
+#         - phone_number
+#         - birthday
+#     login:
+#       type: object
+#       properties:
+#         email:
+#           type: string
+#         password:
+#           type: string
+#       required:
+#         - email
+#         - password
+#   examples:
+#     register:
+#       value:
+#         name: budi
+#         email: budi@gmail.com
+#         password: budiganteng
+#         phone_number: 08960342742
+#         brithday: 17/08/1945
+#     login:
+#       value:
+#         email: budi@gmail.com
+#         password: budiganteng
+#     userRegistered:
+#       description: User already register
+#       value:
+#         statusCode: 400
+#         message: Invalid email or password
+#         errors:
+#           email: invalid email
+#     userNotRegistered:
+#       description: User not register
+#       value:
+#         statusCode: 400
+#         message: Email is not registered
+#         errors:
+#           email: email is not registered
+#     user:
+#       value:
+#         data:
+#           id: 1
+#           name: budi
+#           birthday: 17/08/1945
+#           phone_number: 08932387
+#           createdAt: 348294
+#           updatedAt: 348238
+#     requestMembershipAproved:
+#       value:
+#         message: Request approved
+#         data:
+#           id: 1
+#           status: Refused
+#     requestMembershipRefused:
+#       value:
+#         message: Request refused
+#         data:
+#           id: 1
+#           status: Refused
+#   # response
+#   responses:
+#     internalServerError:
+#       description: Internal server error
+#       content:
+#         "application/json":
+#           example:
+#             statusCode: 500
+#             message: Internal server error
+#     communityNotFound:
+#       description: Community not found
+#       content:
+#         application/json:
+#           example:
+#             statusCode: 404
+#             message: Community not found
+#     requestNotFound:
+#       description: Community not found
+#       content:
+#         application/json:
+#           example:
+#             statusCode: 404
+#             message: Community not found
+#     globalNotFound:
+#       description: Global not found error
+#       content:
+#         application/json:
+#           example:
+#             statusCode: 404
+#             message: Not found error

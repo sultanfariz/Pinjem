@@ -47,6 +47,7 @@ func (b *BookRepository) Create(ctx context.Context, book books.Domain) (books.D
 		BookId:        book.BookId,
 		ISBN:          book.ISBN,
 		Title:         book.Title,
+		Authors:       book.Authors,
 		Publisher:     book.Publisher,
 		PublishDate:   book.PublishDate,
 		Description:   book.Description,
@@ -55,14 +56,26 @@ func (b *BookRepository) Create(ctx context.Context, book books.Domain) (books.D
 		NumberOfPages: book.NumberOfPages,
 		MinDeposit:    book.MinDeposit,
 		Status:        book.Status,
-		CreatedAt:     time.Now(),
-		UpdatedAt:     time.Now(),
 	}
+	createdBook.BeforeCreate()
 	insertErr := b.Conn.Create(&createdBook).Error
 	if insertErr != nil {
 		return books.Domain{}, insertErr
 	}
 	return createdBook.ToDomain(), nil
+}
+
+func (b *BookRepository) UpdateStatus(ctx context.Context, id string, status bool) (books.Domain, error) {
+	var book Books
+	if err := b.Conn.Where("book_id = ?", id).First(&book).Error; err != nil {
+		return books.Domain{}, err
+	}
+	book.Status = status
+	book.UpdatedAt = time.Now()
+	if err := b.Conn.Save(&book).Error; err != nil {
+		return books.Domain{}, err
+	}
+	return book.ToDomain(), nil
 }
 
 // func (b *BookRepository) Update(user *User) error {

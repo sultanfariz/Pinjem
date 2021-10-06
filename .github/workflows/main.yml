@@ -19,40 +19,40 @@ jobs:
           go-version: 1.17
       - name: unit-test
         run: go test -v ./businesses/... -cover
-    build-push-docker:
-      name: build-push-docker
-      runs-on: ubuntu-latest
-      needs: unit-test
-      steps:
-        - uses: actions/checkout@v2
-        - name: build docker
-          run: docker build -t sultanfariz/Pinjem:1.0.0 .
-        - name: connect registry docker hub
-          uses: docker/login-action@v1
-          with:
-            username: sultanfariz
-            password: ${{ secrets.DOCKER_PASSWORD }}
-        - name: push docker
-          run: docker push sultanfariz/Pinjem:1.0.0
-    deployment-ec2:
-      name: deployment-ec2
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v2
-        - name: ssh config
-          env:
-            SSH_USER: ${{ secrets.SSH_USER }}
-            SSH_KEY: ${{ secrets.SSH_KEY }}
-            SSH_HOST: ${{ secrets.SSH_HOST }}
-          run: mkdir -p ~/.ssh
-            echo "$SSH_KEY" > ~/.ssh/pinjem.pem
-            chmod 400 ~/.ssh/pinjem.pem
-            cat >>~/.ssh/config <<END
-            Host development
-            HostName $SSH_HOST
-            User $SSH_USER
-            IdentityFile ~/.ssh/pinjem.pem
-            StrictHostKeyChecking=no
-            END
-        - name: start-app
-          run: ssh development 'docker rm -f $(docker ps -a -q) && docker pull sultanfariz/pinjem:1.0.0 && docker run -d -p 8080:8080 --name pinjem sultanfariz/pinjem:1.0.0'
+  build-push-docker:
+    name: build-push-docker
+    runs-on: ubuntu-latest
+    needs: unit-test
+    steps:
+      - uses: actions/checkout@v2
+      - name: build docker
+        run: docker build -t sultanfariz/Pinjem:1.0.0 .
+      - name: connect registry docker hub
+        uses: docker/login-action@v1
+        with:
+          username: sultanfariz
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: push docker
+        run: docker push sultanfariz/Pinjem:1.0.0
+  deployment-ec2:
+    name: deployment-ec2
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: ssh config
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+        run: mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/pinjem.pem
+          chmod 400 ~/.ssh/pinjem.pem
+          cat >>~/.ssh/config <<END
+          Host development
+          HostName $SSH_HOST
+          User $SSH_USER
+          IdentityFile ~/.ssh/pinjem.pem
+          StrictHostKeyChecking=no
+          END
+      - name: start-app
+        run: ssh development 'docker rm -f $(docker ps -a -q) && docker pull sultanfariz/pinjem:1.0.0 && docker run -d -p 8080:8080 --name pinjem sultanfariz/pinjem:1.0.0'

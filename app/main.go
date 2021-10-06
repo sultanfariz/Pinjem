@@ -21,9 +21,10 @@ import (
 	_orderDb "Pinjem/drivers/databases/orders"
 	_shippingDetailDb "Pinjem/drivers/databases/shipping_details"
 	_userDb "Pinjem/drivers/databases/users"
-	postgres "Pinjem/drivers/postgresql"
 
-	// mysql "Pinjem/drivers/mysql"
+	// postgres "Pinjem/drivers/postgresql"
+
+	mysql "Pinjem/drivers/mysql"
 	"log"
 	"os"
 	"strconv"
@@ -38,8 +39,8 @@ func main() {
 	config.LoadEnv()
 
 	// connect to db
-	configDB := postgres.ConfigDB{
-		// configDB := mysql.ConfigDB{
+	// configDB := postgres.ConfigDB{
+	configDB := mysql.ConfigDB{
 		Host:     os.Getenv("DB_HOST"),
 		Port:     os.Getenv("DB_PORT"),
 		User:     os.Getenv("DB_USER"),

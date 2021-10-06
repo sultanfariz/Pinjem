@@ -7,12 +7,14 @@
     <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/sultanfariz/Pinjem?style=for-the-badge">
 </div>
 
+### Table of Contents
+
 | [Ruang Lingkup Pengembangan](#ruang-lingkup-pengembangan) | [Entity Relationship Diagram](#entity-relationship-diagram) | [Architectural Patterm](#architectural-pattern) | [Unit Testing](#unit-testing) | [API Postman Docs](#api-postman-docs) | [Swagger OpenAPI Docs](#swagger-openapi-docs) |
 | :-------------------------------------------------------: | :---------------------------------------------------------: | :---------------------------------------------: | :---------------------------: | ------------------------------------- | --------------------------------------------- |
 
 ## Ruang Lingkup Pengembangan
 
-[`^ kembali ke atas ^`](#)
+[`^ kembali ke atas ^`](#table-of-contents)
 
 **Hardware :**
 
@@ -42,13 +44,13 @@
 
 ## Entity Relationship Diagram
 
-[`^ kembali ke atas ^`](#)
+[`^ kembali ke atas ^`](#table-of-contents)
 
 ![ERD](./assets/Pinjemin!-FixERD.png)
 
 ## Architectural Pattern
 
-[`^ kembali ke atas ^`](#)
+[`^ kembali ke atas ^`](#table-of-contents)
 
 ![Clean Architecture](./assets/CleanArch.png)
 
@@ -75,12 +77,12 @@ ok  	Pinjem/businesses/users	(cached)	coverage: 94.1% of statements
 
 ## API Postman Docs
 
-[`^ kembali ke atas ^`](#)
+[`^ kembali ke atas ^`](#table-of-contents)
 
 https://documenter.getpostman.com/view/14458184/UUy4e66j
 
 ## Swagger OpenAPI Docs
 
-[`^ kembali ke atas ^`](#)
+[`^ kembali ke atas ^`](#table-of-contents)
 
 https://app.swaggerhub.com/apis/sultanfariz/Pinjem/1.0.0

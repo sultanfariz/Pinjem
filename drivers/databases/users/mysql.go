@@ -4,7 +4,6 @@ import (
 	"Pinjem/businesses/users"
 	"Pinjem/helpers"
 	"context"
-	"log"
 	"time"
 
 	"gorm.io/gorm"
@@ -24,7 +23,7 @@ func (u *UserRepository) Login(ctx context.Context, email string, password strin
 	if err != nil {
 		return users.Domain{}, err
 	}
-	log.Println(user.Password)
+
 	if !helpers.IsMatched(user.Password, password) {
 		return users.Domain{}, err
 	}

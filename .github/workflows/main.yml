@@ -41,7 +41,7 @@ jobs:
         uses: docker/login-action@v1
         with:
           username: sultanfariz
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          password: ngedockterosss
       - name: push docker
         run: docker push sultanfariz/pinjem:1.0.0
 

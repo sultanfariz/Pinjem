@@ -65,7 +65,7 @@ jobs:
           cat >>~/.ssh/config <<END
           Host development
             HostName ec2-18-223-110-242.us-east-2.compute.amazonaws.com
-            User $SSH_USER
+            User ec2-user
             IdentityFile ~/.ssh/pinjem.pem
             StrictHostKeyChecking=no
           END

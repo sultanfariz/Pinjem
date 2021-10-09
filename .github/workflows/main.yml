@@ -70,4 +70,4 @@ jobs:
             StrictHostKeyChecking=no
           END
       - name: Connect EC2 & Remove All Container & Pull from Registry & Start
-        run: ssh development 'docker rm -f $(docker ps -a -q) || true && docker pull sultanfariz/pinjem:1.0.0 && docker run -d -p 8080:8080 --name=pinjem sultanfariz/pinjem:1.0.0'
+        run: ssh development 'docker rm -f $(docker ps -a -q) && docker pull sultanfariz/pinjem:1.0.0 && docker run -d -p 8080:8080 --name pinjem sultanfariz/pinjem:1.0.0'

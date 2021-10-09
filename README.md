@@ -9,38 +9,24 @@
 
 ### Table of Contents
 
-| [Ruang Lingkup Pengembangan](#ruang-lingkup-pengembangan) | [Entity Relationship Diagram](#entity-relationship-diagram) | [Architectural Patterm](#architectural-pattern) | [Unit Testing](#unit-testing) | [API Postman Docs](#api-postman-docs) | [Swagger OpenAPI Docs](#swagger-openapi-docs) |
-| :-------------------------------------------------------: | :---------------------------------------------------------: | :---------------------------------------------: | :---------------------------: | ------------------------------------- | --------------------------------------------- |
+| [Tech Stack](#tech-stack) | [Entity Relationship Diagram](#entity-relationship-diagram) | [Architectural Pattern](#architectural-pattern) | [Unit Testing](#unit-testing) | [API Postman Docs](#api-postman-docs) | [Swagger OpenAPI Docs](#swagger-openapi-docs) | [Server URL](#server-url) |
+| :-----------------------: | :---------------------------------------------------------: | :---------------------------------------------: | :---------------------------: | ------------------------------------- | --------------------------------------------- | ------------------------- |
 
-## Ruang Lingkup Pengembangan
+## Tech Stack
 
 [`^ kembali ke atas ^`](#table-of-contents)
 
-**Hardware :**
-
-```
-- AMD Ryzen 5 2500u
-- RAM 4GB DDR4
-- AMD Radeon Vega Graphics
-- 1TB HDD 128GB SSD
-```
-
-**Software :**
-
-```
-- MySQL + GORM
-- Echo Go
-- Docker
-- Postman
-- Swagger
-- Visual Studio Code
-```
-
-**Lainnya :**
-
-```
-- Waktu pengerjaan +-3 minggu
-```
+- **Language:** [Go](https://golang.org/)
+- **Framework:** [Echo](https://echo.labstack.com/)
+- **Database:** [MySQL](https://www.mysql.com/), [RDS](https://aws.amazon.com/rds/)
+- **ORM:** [GORM](https://gorm.io/)
+- **Unit Testing:** [Mockery](https://github.com/vektra/mockery), [Testify](https://github.com/stretchr/testify)
+- **API Testing:** [Postman](https://www.getpostman.com/)
+- **API Docs:** [Swagger](https://swagger.io/), [Postman](https://www.getpostman.com/)
+- **Container:** [Docker](https://www.docker.com/)
+- **Deployment:** [EC2](https://aws.amazon.com/ec2/)
+- **CI/CD:** [GitHub Actions](https://github.com/features/actions)
+- **Code Editor:** [Visual Studio Code](https://code.visualstudio.com/)
 
 ## Entity Relationship Diagram
 
@@ -52,6 +38,8 @@
 
 [`^ kembali ke atas ^`](#table-of-contents)
 
+Architectural pattern yang digunakan adalah Clean Architecture, dimana aplikasi terbagi atas 4 layer, antara lain: **Domain/Entity**, **Use Case**, **Controller**, dan **Repository**. Dengan pola seperti ini, semua komponen aplikasi dapat dibuat secara independen sehingga mengurangi dependensi antar komponen dan dapat dikembangkan secara berkelanjutan.
+
 ![Clean Architecture](./assets/CleanArch.png)
 
 ## Unit Testing
@@ -61,18 +49,20 @@
 Hasil dari unit test yang telah dilakukan menunjukkan rerata nilai coverage yang berada di atas 80% pada tiap domain bisnis yang ada (6 domain bisnis).
 
 ```
-ok  	Pinjem/businesses/book_orders	(cached)	coverage: 81.2% of statements
-?   	Pinjem/businesses/book_orders/mocks	[no test files]
-ok  	Pinjem/businesses/books	(cached)	coverage: 100.0% of statements
-?   	Pinjem/businesses/books/mocks	[no test files]
-ok  	Pinjem/businesses/deposits	(cached)	coverage: 81.2% of statements
-?   	Pinjem/businesses/deposits/mocks	[no test files]
-ok  	Pinjem/businesses/orders	(cached)	coverage: 84.2% of statements
-?   	Pinjem/businesses/orders/mocks	[no test files]
-ok  	Pinjem/businesses/shipping_details	(cached)	coverage: 100.0% of statements
-?   	Pinjem/businesses/shipping_details/mocks	[no test files]
-ok  	Pinjem/businesses/users	(cached)	coverage: 94.1% of statements
-?   	Pinjem/businesses/users/mocks	[no test files]
+
+ok Pinjem/businesses/book_orders (cached) coverage: 81.2% of statements
+? Pinjem/businesses/book_orders/mocks [no test files]
+ok Pinjem/businesses/books (cached) coverage: 100.0% of statements
+? Pinjem/businesses/books/mocks [no test files]
+ok Pinjem/businesses/deposits (cached) coverage: 81.2% of statements
+? Pinjem/businesses/deposits/mocks [no test files]
+ok Pinjem/businesses/orders (cached) coverage: 84.2% of statements
+? Pinjem/businesses/orders/mocks [no test files]
+ok Pinjem/businesses/shipping_details (cached) coverage: 100.0% of statements
+? Pinjem/businesses/shipping_details/mocks [no test files]
+ok Pinjem/businesses/users (cached) coverage: 94.1% of statements
+? Pinjem/businesses/users/mocks [no test files]
+
 ```
 
 ## API Postman Docs
@@ -86,3 +76,9 @@ https://documenter.getpostman.com/view/14458184/UUy4e66j
 [`^ kembali ke atas ^`](#table-of-contents)
 
 https://app.swaggerhub.com/apis/sultanfariz/Pinjem/1.0.0
+
+## Server URL
+
+[`^ kembali ke atas ^`](#table-of-contents)
+
+http://ec2-18-223-110-242.us-east-2.compute.amazonaws.com/api/v1

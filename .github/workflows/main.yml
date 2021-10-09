@@ -64,7 +64,7 @@ jobs:
           chmod 400 ~/.ssh/pinjem.pem
           cat >>~/.ssh/config <<END
           Host development
-            HostName $SSH_HOST
+            HostName ec2-18-223-110-242.us-east-2.compute.amazonaws.com
             User $SSH_USER
             IdentityFile ~/.ssh/pinjem.pem
             StrictHostKeyChecking=no

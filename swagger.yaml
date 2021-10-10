@@ -37,23 +37,7 @@ paths:
                 success: true
                 messages: Success
                 data:
-                  id: 1
-                  email: sultan@gmail.com
-                  fullname: Sultan Fariz
-                  nik: 1234567890112233
-                  phoneNumber: 08123456789
-                  birthdate: 2001-01-01
-                  address: Jl. Kebon Jeruk No. 1
-                  provinsi: Jawa Barat
-                  kota: Bandung
-                  kecamatan: Kebon Jeruk
-                  desa: Kebon Jeruk
-                  postalCode: 40132
-                  role: user
-                  status: 1
-                  linkKTP: http://localhost:8080/api/v1/uploads/KTP/KTP_Sultan_20210929161247.jpg
-                  createdAt: 2020-01-01T00:00:00.000Z
-                  updatedAt: 2020-01-01T00:00:00.000Z
+                  $ref: "#/components/examples/user"
         "500":
           $ref: "#/components/responses/internalServerError"
   /login:
@@ -111,7 +95,7 @@ paths:
         required: true
         allowEmptyValue: false
         schema:
-          type: int
+          type: integer
     get:
       tags:
         - User
@@ -127,30 +111,23 @@ paths:
                   $ref: "#/components/examples/user"
         "401":
           $ref: "#/components/responses/unauthorized"
-    /users/my:
-      description: Get user detail
-      get:
-        tags:
-          - User
-        security:
-          - cookieToken: []
-        responses:
-          "200":
-            description: Get user detail success
-            content:
-              application/json:
-                examples:
-                  user:
-                    $ref: "#/components/examples/my-profile"
-          "500":
-            description: Internal server error
-            content:
-              application/json:
-                examples:
-                  status: 500
-                  success: false
-                  message: internal server error
-                  data: null
+  /users/my:
+    description: Get user detail
+    get:
+      tags:
+        - User
+      security:
+        - cookieToken: []
+      responses:
+        "200":
+          description: Get user detail success
+          content:
+            application/json:
+              examples:
+                user:
+                  $ref: "#/components/examples/my-profile"
+        "500":
+          $ref: "#/components/responses/internalServerError"
   /uploads/{file}:
     description: Get uploaded file
     parameters:
@@ -173,15 +150,11 @@ paths:
             application/json:
               example:
                 file
-        "404":
-          description: File not found
-          content:
-            application/json:
-              examples:
-                message: Not found
+        "404": 
+          $ref: "#/components/responses/fileNotFound"
   /books:
-    description: Get all books
     get:
+      description: Get all books
       tags:
         - Book
       responses:
@@ -197,6 +170,7 @@ paths:
                   books:
                     $ref: "#/components/examples/books"
     post:
+      description: Insert new book
       tags:
         - Book
       security:
@@ -535,22 +509,52 @@ components:
     register:
       type: object
       properties:
-        name:
+        fullname:
           type: string
         email:
           type: string
         password:
           type: string
-        phone_number:
+        nik:
           type: string
-        brithday:
+        phoneNumber:
           type: string
+        birthdate:
+          type: string
+        address:
+          type: string
+        provinsi:
+          type: string
+        kota: 
+          type: string
+        kecamatan: 
+          type: string
+        desa: 
+          type: string
+        postalCode: 
+          type: string
+        role: 
+          type: string
+        status: 
+          type: boolean
+        ktp: 
+          type: object
       required:
-        - name
+        - fullname
         - email
         - password
-        - phone_number
-        - birthday
+        - nik
+        - phoneNumber
+        - birthdate
+        - address
+        - provinsi
+        - kota
+        - kecamatan
+        - desa
+        - postalCode
+        - role
+        - status
+        - ktp
     login:
       type: object
       properties:
@@ -618,6 +622,27 @@ components:
     #     data:
     #       id: 1
           # status: Refused
+    users:
+      value:
+        type: array
+        items:
+          id: 1
+          email: sultan@gmail.com
+          fullname: Sultan Fariz
+          nik: 1234567890112233
+          phoneNumber: 08123456789
+          birthdate: 2001-01-01
+          address: Jl. Kebon Jeruk No. 1
+          provinsi: Jawa Barat
+          kota: Bandung
+          kecamatan: Kebon Jeruk
+          desa: Kebon Jeruk
+          postalCode: 40132
+          role: user
+          status: 1
+          linkKTP: http://localhost:8080/api/v1/uploads/KTP/KTP_Sultan_20210929161247.jpg
+          createdAt: 2020-01-01T00:00:00.000Z
+          updatedAt: 2020-01-01T00:00:00.000Z
   # response
   responses:
     internalServerError:
@@ -641,6 +666,13 @@ components:
           example:
             statusCode: 401
             message: unauthorized
+    fileNotFound:
+      description: File not found
+      content:
+        "application/json":
+          example:
+            statusCode: 400
+            message: File not found
     globalNotFound:
       description: Global not found error
       content:

@@ -8,6 +8,7 @@ import (
 	"Pinjem/controllers/orders"
 	"Pinjem/controllers/users"
 	"Pinjem/helpers"
+	"html/template"
 	"os"
 
 	"github.com/labstack/echo/v4"
@@ -24,8 +25,17 @@ type ControllerList struct {
 }
 
 func (c ControllerList) InitRoutes(e *echo.Echo) {
+	// render unit test result
+	renderer := &helpers.TemplateRenderer{
+		Templates: template.Must(template.ParseGlob("*.html")),
+	}
+	e.Renderer = renderer
+	e.GET("/api/coverage", func(c echo.Context) error {
+		return c.Render(200, "cover.html", nil)
+	})
+
 	v1 := e.Group("/api/v1")
-	// v1.Use(middleware.Recover())
+	v1.Use(middleware.Recover())
 	v1.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
 		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},

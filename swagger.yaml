@@ -37,23 +37,7 @@ paths:
                 success: true
                 messages: Success
                 data:
-                  id: 1
-                  email: sultan@gmail.com
-                  fullname: Sultan Fariz
-                  nik: 1234567890112233
-                  phoneNumber: 08123456789
-                  birthdate: 2001-01-01
-                  address: Jl. Kebon Jeruk No. 1
-                  provinsi: Jawa Barat
-                  kota: Bandung
-                  kecamatan: Kebon Jeruk
-                  desa: Kebon Jeruk
-                  postalCode: 40132
-                  role: user
-                  status: 1
-                  linkKTP: http://localhost:8080/api/v1/uploads/KTP/KTP_Sultan_20210929161247.jpg
-                  createdAt: 2020-01-01T00:00:00.000Z
-                  updatedAt: 2020-01-01T00:00:00.000Z
+                  $ref: "#/components/examples/user"
         "500":
           $ref: "#/components/responses/internalServerError"
   /login:
@@ -84,14 +68,7 @@ paths:
                 data:
                   token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJyb2xlIjoidXNlciIsImV4cCI6MTY0MjEyMjc5Nn0.CN2J3FCBUSImJzfJyT-RH3Sf_B-ri-MXdMJUyDJZNBI
         "401":
-          description: Invalid credentials
-          content:
-            application/json:
-              examples:
-                status: 401
-                success: false
-                message: invalid credentials
-                data: null
+          $ref: "#/components/responses/invalidCredentials"
   /users:
     description: Get all user
     get:
@@ -108,14 +85,7 @@ paths:
                 users:
                   $ref: "#/components/examples/users"
         "401":
-          description: Unauthorized
-          content:
-            application/json:
-              examples:
-                status: 401
-                success: false
-                message: unauthorized
-                data: null
+          $ref: "#/components/responses/unauthorized"
   /users/{userId}:
     description: Get user detail
     parameters:
@@ -125,7 +95,7 @@ paths:
         required: true
         allowEmptyValue: false
         schema:
-          type: int
+          type: integer
     get:
       tags:
         - User
@@ -140,38 +110,24 @@ paths:
                 user:
                   $ref: "#/components/examples/user"
         "401":
-          description: Unauthorized
+          $ref: "#/components/responses/unauthorized"
+  /users/my:
+    description: Get user detail
+    get:
+      tags:
+        - User
+      security:
+        - cookieToken: []
+      responses:
+        "200":
+          description: Get user detail success
           content:
             application/json:
               examples:
-                status: 401
-                success: false
-                message: unauthorized
-                data: null
-    /users/my:
-      description: Get user detail
-      get:
-        tags:
-          - User
-        security:
-          - cookieToken: []
-        responses:
-          "200":
-            description: Get user detail success
-            content:
-              application/json:
-                examples:
-                  user:
-                    $ref: "#/components/examples/my-profile"
-          "500":
-            description: Internal server error
-            content:
-              application/json:
-                examples:
-                  status: 500
-                  success: false
-                  message: internal server error
-                  data: null
+                user:
+                  $ref: "#/components/examples/my-profile"
+        "500":
+          $ref: "#/components/responses/internalServerError"
   /uploads/{file}:
     description: Get uploaded file
     parameters:
@@ -194,15 +150,11 @@ paths:
             application/json:
               example:
                 file
-        "404":
-          description: File not found
-          content:
-            application/json:
-              examples:
-                message: Not found
+        "404": 
+          $ref: "#/components/responses/fileNotFound"
   /books:
-    description: Get all books
     get:
+      description: Get all books
       tags:
         - Book
       responses:
@@ -218,6 +170,7 @@ paths:
                   books:
                     $ref: "#/components/examples/books"
     post:
+      description: Insert new book
       tags:
         - Book
       security:
@@ -249,11 +202,7 @@ paths:
           content:
             application/json:
               examples:
-                status: 500
-                success: false
-                message: internal server error
-                data: null
-  /books/{bookId}:
+                $ref: "#/components/responses/internalServerError"
     description: Get book detail
     parameters:
       - name: bookId
@@ -279,11 +228,7 @@ paths:
           content:
             application/json:
               examples:
-                status: 500
-                success: false
-                message: internal server error
-                data: null
-  /deposits:
+                $ref: "#/components/responses/internalServerError"
     description: Get all deposits
     get:
       tags:
@@ -330,11 +275,7 @@ paths:
           content:
             application/json:
               examples:
-                status: 500
-                success: false
-                message: internal server error
-                data: null
-  /deposits/my:
+                $ref: "#/components/responses/internalServerError"
     description: Top up my deposit balance
     post:
       tags:
@@ -368,11 +309,7 @@ paths:
           content:
             application/json:
               examples:
-                status: 500
-                success: false
-                message: internal server error
-                data: null
-  /orders:
+                $ref: "#/components/responses/internalServerError"
     description: Get all orders
     get:
       tags:
@@ -392,11 +329,7 @@ paths:
           content:
             application/json:
               examples:
-                status: 500
-                success: false
-                message: internal server error
-                data: null
-    post:
+                $ref: "#/components/responses/internalServerError"
       tags:
         - Order
       security:
@@ -432,11 +365,7 @@ paths:
           content:
             application/json:
               examples:
-                status: 500
-                success: false
-                message: internal server error
-                data: null
-  /orders/my:
+                $ref: "#/components/responses/internalServerError"
     description: Get my orders
     get:
       tags:
@@ -456,11 +385,7 @@ paths:
           content:
             application/json:
               examples:
-                status: 500
-                success: false
-                message: internal server error
-                data: null
-  /orders/{orderId}:
+                $ref: "#/components/responses/internalServerError"
     description: Get order detail
     parameters:
       - name: orderId
@@ -501,11 +426,7 @@ paths:
           content:
             application/json:
               examples:
-                status: 500
-                success: false
-                message: internal server error
-                data: null
-    patch:
+                $ref: "#/components/responses/internalServerError"
       tags:
         - Order
       security:
@@ -546,11 +467,7 @@ paths:
           content:
             application/json:
               examples:
-                status: 500
-                success: false
-                message: internal server error
-                data: null
-    delete:
+                $ref: "#/components/responses/internalServerError"
       tags:
         - Order
       security:
@@ -579,123 +496,187 @@ paths:
           content:
             application/json:
               examples:
-                status: 500
-                success: false
-                message: internal server error
-                data: null
-# $ref: "#/components/responses/internalServerError"
-# # components
-# components:
-#   securitySchemes:
-#     cookieToken:
-#       type: apiKey
-#       in: cookie
-#       description: Authentication user security
-#       name: token
-#   schemas:
-#     register:
-#       type: object
-#       properties:
-#         name:
-#           type: string
-#         email:
-#           type: string
-#         password:
-#           type: string
-#         phone_number:
-#           type: string
-#         brithday:
-#           type: string
-#       required:
-#         - name
-#         - email
-#         - password
-#         - phone_number
-#         - birthday
-#     login:
-#       type: object
-#       properties:
-#         email:
-#           type: string
-#         password:
-#           type: string
-#       required:
-#         - email
-#         - password
-#   examples:
-#     register:
-#       value:
-#         name: budi
-#         email: budi@gmail.com
-#         password: budiganteng
-#         phone_number: 08960342742
-#         brithday: 17/08/1945
-#     login:
-#       value:
-#         email: budi@gmail.com
-#         password: budiganteng
-#     userRegistered:
-#       description: User already register
-#       value:
-#         statusCode: 400
-#         message: Invalid email or password
-#         errors:
-#           email: invalid email
-#     userNotRegistered:
-#       description: User not register
-#       value:
-#         statusCode: 400
-#         message: Email is not registered
-#         errors:
-#           email: email is not registered
-#     user:
-#       value:
-#         data:
-#           id: 1
-#           name: budi
-#           birthday: 17/08/1945
-#           phone_number: 08932387
-#           createdAt: 348294
-#           updatedAt: 348238
-#     requestMembershipAproved:
-#       value:
-#         message: Request approved
-#         data:
-#           id: 1
-#           status: Refused
-#     requestMembershipRefused:
-#       value:
-#         message: Request refused
-#         data:
-#           id: 1
-#           status: Refused
-#   # response
-#   responses:
-#     internalServerError:
-#       description: Internal server error
-#       content:
-#         "application/json":
-#           example:
-#             statusCode: 500
-#             message: Internal server error
-#     communityNotFound:
-#       description: Community not found
-#       content:
-#         application/json:
-#           example:
-#             statusCode: 404
-#             message: Community not found
-#     requestNotFound:
-#       description: Community not found
-#       content:
-#         application/json:
-#           example:
-#             statusCode: 404
-#             message: Community not found
-#     globalNotFound:
-#       description: Global not found error
-#       content:
-#         application/json:
-#           example:
-#             statusCode: 404
-#             message: Not found error
+                $ref: "#/components/responses/internalServerError"
+# components
+components:
+  securitySchemes:
+    cookieToken:
+      type: apiKey
+      in: cookie
+      description: Authentication user security
+      name: token
+  schemas:
+    register:
+      type: object
+      properties:
+        fullname:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        nik:
+          type: string
+        phoneNumber:
+          type: string
+        birthdate:
+          type: string
+        address:
+          type: string
+        provinsi:
+          type: string
+        kota: 
+          type: string
+        kecamatan: 
+          type: string
+        desa: 
+          type: string
+        postalCode: 
+          type: string
+        role: 
+          type: string
+        status: 
+          type: boolean
+        ktp: 
+          type: object
+      required:
+        - fullname
+        - email
+        - password
+        - nik
+        - phoneNumber
+        - birthdate
+        - address
+        - provinsi
+        - kota
+        - kecamatan
+        - desa
+        - postalCode
+        - role
+        - status
+        - ktp
+    login:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+  examples:
+    register:
+      value:
+        email: sultan@gmail.com
+        password: sultanpwd
+        fullname: Sultan Fariz
+        nik: 1234567890112233
+        phoneNumber: 08123456789
+        birthdate: 2001-01-01
+        address: Jl. Kebon Jeruk No. 1
+        provinsi: Jawa Barat
+        kota: Bandung
+        kecamatan: Kebon Jeruk
+        desa: Kebon Jeruk
+        postalCode: 40132
+        role: user
+        status: 1
+        ktp: file
+    login:
+      value:
+        email: sultan@gmail.com
+        password: sultanpwd
+    # userRegistered:
+    #   description: User already register
+    #   value:
+    #     statusCode: 400
+    #     message: Invalid email or password
+    #     errors:
+    #       email: invalid email
+    # userNotRegistered:
+    #   description: User not register
+    #   value:
+    #     statusCode: 400
+    #     message: Email is not registered
+    #     errors:
+    #       email: email is not registered
+    # user:
+    #   value:
+    #     data:
+    #       id: 1
+    #       name: budi
+    #       birthday: 17/08/1945
+    #       phone_number: 08932387
+    #       createdAt: 348294
+    #       updatedAt: 348238
+    # requestMembershipAproved:
+    #   value:
+    #     message: Request approved
+    #     data:
+    #       id: 1
+    #       status: Refused
+    # requestMembershipRefused:
+    #   value:
+    #     message: Request refused
+    #     data:
+    #       id: 1
+          # status: Refused
+    users:
+      value:
+        type: array
+        items:
+          id: 1
+          email: sultan@gmail.com
+          fullname: Sultan Fariz
+          nik: 1234567890112233
+          phoneNumber: 08123456789
+          birthdate: 2001-01-01
+          address: Jl. Kebon Jeruk No. 1
+          provinsi: Jawa Barat
+          kota: Bandung
+          kecamatan: Kebon Jeruk
+          desa: Kebon Jeruk
+          postalCode: 40132
+          role: user
+          status: 1
+          linkKTP: http://localhost:8080/api/v1/uploads/KTP/KTP_Sultan_20210929161247.jpg
+          createdAt: 2020-01-01T00:00:00.000Z
+          updatedAt: 2020-01-01T00:00:00.000Z
+  # response
+  responses:
+    internalServerError:
+      description: Internal server error
+      content:
+        "application/json":
+          example:
+            statusCode: 500
+            message: internal server error
+    invalidCredentials:
+      description: Invalid credentials
+      content:
+        "application/json":
+          example:
+            statusCode: 401
+            message: invalid credentials
+    unauthorized:
+      description: Unauthorized
+      content:
+        "application/json":
+          example:
+            statusCode: 401
+            message: unauthorized
+    fileNotFound:
+      description: File not found
+      content:
+        "application/json":
+          example:
+            statusCode: 400
+            message: File not found
+    globalNotFound:
+      description: Global not found error
+      content:
+        application/json:
+          example:
+            statusCode: 404
+            message: Not found error

@@ -47,7 +47,7 @@ Architectural pattern yang digunakan adalah Clean Architecture, dimana aplikasi 
 [`^ kembali ke atas ^`](#)
 
 Hasil dari unit test yang telah dilakukan menunjukkan rerata nilai coverage yang berada di atas 80% pada tiap domain bisnis yang ada (6 domain bisnis).
-[Link](http://ec2-18-223-110-242.us-east-2.compute.amazonaws.com:8080/api/coverage)
+[Link](http://ec2-3-143-230-122.us-east-2.compute.amazonaws.com:8080/api/coverage)
 
 ```
 
@@ -82,4 +82,4 @@ https://app.swaggerhub.com/apis/sultanfariz/Pinjem/1.0.0
 
 [`^ kembali ke atas ^`](#table-of-contents)
 
-http://ec2-18-223-110-242.us-east-2.compute.amazonaws.com:8080/api/v1
+http://ec2-3-143-230-122.us-east-2.compute.amazonaws.com:8080/api/v1
